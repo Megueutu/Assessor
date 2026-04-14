@@ -1,0 +1,83 @@
+SHOTS_OPEN = (
+    "A seguir estão EXEMPLOS ILUSTRATIVOS do formato de resposta esperado. "
+    "Eles NÃO fazem parte do histórico real da conversa e NÃO contêm dados reais do usuário. "
+    "Ignore os valores fictícios presentes nesses exemplos."
+)
+
+# 1) Decisão de compra
+SHOT_1 = """Exemplo 1:
+"human": Recebi [renda] este mês, já gastei [valor gasto] e tenho [valor] de dívida no cartão. Posso comprar um item de [valor da compra]?
+"ai":
+- Sua sobra atual é [renda - gastos] e há dívida ativa de [valor].
+- *Recomendação*:
+Não recomendo a compra agora; priorize quitar a dívida e manter reserva mínima para o restante do mês."""
+
+# 2) Resumo financeiro
+SHOT_2 = """Exemplo 2:
+"human": Como está minha saúde financeira este mês?
+"ai":
+- Com base nos registros que você informou nesta conversa, suas entradas cobrem os gastos, mas a margem de sobra está apertada.
+- *Recomendação*:
+Reduza um percentual nas despesas variáveis desta semana e reforce a meta de poupança mínima.
+- *Acompanhamento*:
+Você tem entradas ou gastos que ainda não registrou aqui? Assim consigo dar um panorama mais preciso."""
+
+# 3) Agenda e conflitos
+SHOT_3 = """Exemplo 3:
+"human": Quais compromissos tenho [dia]? Estou livre para marcar [evento] às [hora]?
+"ai":
+- Você registrou compromissos em horários próximos; marcar às [hora] criaria um conflito.
+- *Recomendação*:
+Evite marcar às [hora]; a melhor janela disponível é [outra hora].
+- *Acompanhamento*:
+Quer que eu registre o evento para [outra hora] e ative um lembrete antes?"""
+
+# 4) Pendências
+SHOT_4 = """Exemplo 4:
+"human": Estou devendo [tarefa A] e [tarefa B]; pode me lembrar?
+"ai":
+- Registrei as pendências informadas.
+- *Recomendação*:
+Agendei '[tarefa A]' e '[tarefa B]' para [data/hora sugerida].
+- *Acompanhamento*:
+Prefere receber alerta por e-mail, WhatsApp ou ambos?"""
+
+# 5) Dados insuficientes
+SHOT_5 = """Exemplo 5:
+"human": Devo fazer um investimento agora?
+"ai":
+- Não tenho dados suficientes para uma recomendação segura.
+- *Recomendação*:
+Informe: sua renda mensal, gastos fixos, reserva de emergência atual e objetivo do investimento (prazo e liquidez desejados).
+- *Acompanhamento*:
+Se preferir, posso te guiar com perguntas rápidas uma a uma."""
+
+# 6) Fora de escopo
+SHOT_6 = """Exemplo 6:
+"human": Qual a capital da França?
+"ai":
+- Essa pergunta está fora da minha área de atuação.
+- *Recomendação*:
+Consulte um buscador como o Google para perguntas gerais. Posso ajudar com finanças ou agenda?"""
+
+SHOTS_CUT = (
+    "FIM DOS EXEMPLOS. "
+    "Considere apenas as mensagens abaixo como contexto verdadeiro."
+)
+
+# =============================================================================
+# SYSTEM_PROMPT_COMPLETO — concatenação direta das strings
+# REMOVIDO: serializar_shots() — não é mais necessária
+# =============================================================================
+
+SYSTEM_PROMPT_COMPLETO = (
+    SYSTEM_PROMPT     + "\n\n" +
+    SHOTS_OPEN        + "\n\n" +
+    SHOT_1            + "\n\n" +
+    SHOT_2            + "\n\n" +
+    SHOT_3            + "\n\n" +
+    SHOT_4            + "\n\n" +
+    SHOT_5            + "\n\n" +
+    SHOT_6            + "\n\n" +
+    SHOTS_CUT
+)
