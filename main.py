@@ -81,27 +81,63 @@ EXECUTOR = {
 
 
 
-# Primeiro é necessário direcionar a pergunta do usuário para o Router
-# que será o responsável por redirecionar a mensagem:
-#   1. De volta para o usuário
-#
+
+
 
 def fluxo_assessor(pergunta_usuario, session_id):
+    # Fluxo do Roteador
     resposta_router = router_app.invoke(
         {'messages': [{"role": "human", "content": pergunta_usuario}]},
-        config={"configurable": {"thread_id": session_id}})
-    if not resposta_router.strip().startswith("ROUTE="):
-        return resposta_router
+        config={"configurable": {"thread_id": session_id}}
+    )
+    saida_router = resposta_router['messages'][-1].content
 
-    # resposta_orquestrador = orquestrador_app.invoke(
-    #     {'messages': [{"role": "human", "content": resposta_router['messages'][-1].content}]},
-    #     config={"configurable": {"thread_id": session_id}})
-    # # print("Resposta do Orquestrador:", resposta_orquestrador['messages'][-1].content)
-
-    # return resposta_orquestrador['messages'][-1].content
+    if not saida_router.strip().startswith("ROUTE="):
+        return saida_router
 
 
 
+    # Caso passe para um especialista
+    try:
+        print(f"Resposta do Router:\n{saida_router}")
+
+        linhas = saida_router.strip().split("\n")
+        rota = None
+        pergunta_original = None
+
+        for linha in linhas:
+            if linha.startswith("ROUTE="):
+                rota = linha.replace("ROUTE=", "").strip()
+            elif linha.startswith("PERGUNTA_ORIGINAL="):
+                pergunta_original = linha.replace("PERGUNTA_ORIGINAL=", "").strip()
+
+        if rota in EXECUTOR:
+            resposta_especialista = EXECUTOR[rota].invoke(
+                {'messages': [{"role": "human", "content": pergunta_original}]},
+                config={"configurable": {"thread_id": session_id}}
+            )
+        else:
+            return saida_router
+
+    except Exception as e:
+        return str(e)
+
+
+
+    # Retorno do orquestrador (resposta do especialista formatada)
+    resposta_orquestrador = orquestrador_app.invoke(
+        {'messages': [{"role": "human", "content": resposta_especialista['messages'][-1].content}]},
+        config={"configurable": {"thread_id": session_id}}
+    )
+
+    return resposta_orquestrador['messages'][-1].content
+
+
+
+
+
+
+os.system('cls' if os.name == 'nt' else 'clear')
 while 1:
     try:
         user_input = input("Digite sua pergunta: ").strip()
@@ -110,11 +146,6 @@ while 1:
             break
 
         resposta = fluxo_assessor(pergunta_usuario=user_input, session_id="id_usuario_mas_agora_não_importa")
-        print(resposta["message"][-1].content)
+        print(resposta)
     except Exception as e:
         print(f'Erro: {e}')
-
-# resposta = router_app.invoke(
-#             {'messages': [{"role": "human", "content": user_input}]},
-#             config={"configurable": {"thread_id": "meu_id_de_sessao"}})
-#             print(resposta['messages'][-1].content)
