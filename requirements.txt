@@ -1,2 +1,12 @@
 python-dotenv
-google-genai
+langchain
+langchain-core
+langgraph
+langchain-google-genai
+langchain-groq
+langchain-community
+langchain-text-splitters
+faiss-cpu
+pypdf
+psycopg2-binary
+pydantic

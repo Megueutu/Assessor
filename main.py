@@ -5,14 +5,16 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import create_agent
 from langgraph.checkpoint.memory import MemorySaver
 
-from pg_tools import TOOLS
 from langchain_groq import ChatGroq
+from tools.FIN_tools import TOOLS
+from tools.FAQ_tools import faq_retriever
 
 from prompt import (
     ROUTER_PROMPT_COMPLETO,
     FINANCEIRO_PROMPT_COMPLETO,
     AGENDA_PROMPT_COMPLETO,
     ORQUESTRADOR_PROMPT_COMPLETO,
+    FAQ_PROMPT_COMPLETO
 )
 
 
@@ -20,7 +22,6 @@ from prompt import (
 load_dotenv()
 
 
-# LLMs Antigos
 
 llm_gemini = ChatGoogleGenerativeAI(
     model='gemini-2.5-flash',
@@ -36,8 +37,6 @@ llm_groq = ChatGroq(
 )
 
 llm_especialista = llm_gemini.with_fallbacks([llm_groq])
-
-
 
 llm_rapido = ChatGroq(
     model='llama-3.3-70b-versatile',
@@ -63,6 +62,12 @@ financeiro_app = create_agent( # Com TOOLs, mas sem memória
     tools=TOOLS,
 )
 
+financeiro_app = create_agent(
+    model=llm_rapido,
+    system_prompt=FAQ_PROMPT_COMPLETO,
+    tools=TOOLS,
+)
+
 agenda_app = create_agent(
     model=llm_especialista,
     system_prompt=AGENDA_PROMPT_COMPLETO,
@@ -73,10 +78,21 @@ orquestrador_app = create_agent( # Só formata o JSON da saída (especialista)
     system_prompt=ORQUESTRADOR_PROMPT_COMPLETO,
 )
 
+faq_app = create_agent(
+    model=llm_rapido,
+    system_prompt=FAQ_PROMPT_COMPLETO,
+    tools=[faq_retriever],
+)
+
+
+
+
+
 
 EXECUTOR = {
     "financeiro": financeiro_app,
     "agenda": agenda_app,
+    "faq": faq_app,
 }
 
 
@@ -137,7 +153,7 @@ def fluxo_assessor(pergunta_usuario, session_id):
 
 
 
-os.system('cls' if os.name == 'nt' else 'clear')
+os.system('cls' if os.name == 'nt' else 'clear') # Limpando o terminal
 while 1:
     try:
         user_input = input("Digite sua pergunta: ").strip()
@@ -146,6 +162,6 @@ while 1:
             break
 
         resposta = fluxo_assessor(pergunta_usuario=user_input, session_id="id_usuario_mas_agora_não_importa")
-        print(resposta)
+        print("🤖 > " + resposta + "\n")
     except Exception as e:
         print(f'Erro: {e}')

@@ -570,9 +570,8 @@ ORQUESTRADOR_PROMPT_COMPLETO = (
 # Entrada : protocolo de texto do Roteador
 # Saída   : JSON estruturado para o Orquestrador
 # ==============================================================================
-AGENDA_PROMPT = f"""
-
-
+FAQ_PROMPT = f"""
+{PERSONA_SISTEMA}
 
 ### ENTRADA
 Você recebe o protocolo de encaminhamento do Roteador no formato:
@@ -595,3 +594,9 @@ previsto do sistema e privacidade. - com base EXCLUSIVAMENTE no conteúdo do FAQ
 - Seja claro, objetivo e use linguagem acessível.
 - Não mencione que está consultando um arquivo ou banco vetorial.
 """
+
+
+
+FAQ_PROMPT_COMPLETO = (
+    FAQ_PROMPT #      + "\n\n" 
+)
