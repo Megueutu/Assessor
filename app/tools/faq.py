@@ -1,5 +1,5 @@
-from core.config import config
-from core.llms import EMBEDDING_MODEL
+from app.core.config import config
+from app.core.llms import EMBEDDING_MODEL
 
 from langchain.tools import tool
 from langchain_community.document_loaders import PyPDFLoader

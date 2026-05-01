@@ -1,8 +1,8 @@
 from langchain.agents import create_agent
-from core.llms import SPECIALIST_LLM
+from app.core.llms import SPECIALIST_LLM
 
-from prompt import FINANTIAL_PROMPT_COMPLETED
-from tools.finantial import TOOLS
+from app.prompt.finantial import FINANTIAL_PROMPT_COMPLETED
+from app.tools.finantial import TOOLS
 
 FINANTIAL_AGENT = create_agent(
     model=SPECIALIST_LLM,

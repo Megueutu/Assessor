@@ -1,4 +1,4 @@
-from agents.router import ROUTER_AGENT
+from app.agents.router import ROUTER_AGENT
 from app.agents.doer import DOER
 from app.agents.orchestrator import ORCHESTRATOR_AGENT
 
@@ -11,8 +11,6 @@ def assessor_flow(pergunta_usuario, session_id):
 
     if not saida_router.strip().startswith("ROUTE="):
         return saida_router
-
-
 
     # Caso passe para um especialista
     try:

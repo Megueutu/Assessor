@@ -1,8 +1,8 @@
 from langchain.agents import create_agent
-from core.llms import FAST_LLM
+from app.core.llms import FAST_LLM
 
-from prompt import FAQ_PROMPT_COMPLETED
-from tools.faq import TOOLS
+from app.prompt.faq import FAQ_PROMPT_COMPLETED
+from app.tools.faq import TOOLS
 
 FAQ_AGENT = create_agent(
     model=FAST_LLM,

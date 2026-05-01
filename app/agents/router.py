@@ -1,8 +1,8 @@
 from langchain.agents import create_agent
-from core.llms import FAST_LLM
+from app.core.llms import FAST_LLM
 
-from prompt import ROUTER_PROMPT_COMPLETED
-from core.memory import ROUTER_MEMORY
+from app.prompt.router import ROUTER_PROMPT_COMPLETED
+from app.core.memory import ROUTER_MEMORY
 
 ROUTER_AGENT = create_agent(
     model=FAST_LLM,
