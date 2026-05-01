@@ -1,9 +1,7 @@
-from .persona import PERSONA_SISTEMA, CONTEXTO_TEMPORAL
+from .system import SHARED_PROMPT
 
-ORQUESTRADOR_PROMPT = f"""
-{PERSONA_SISTEMA}
-
-{CONTEXTO_TEMPORAL}
+ORCHESTRATOR_PROMPT = f"""
+{SHARED_PROMPT}
 
 ### PAPEL
 Receber o JSON do especialista e produzir a resposta final ao usuário.
@@ -33,3 +31,5 @@ ESPECIALISTA_JSON com campos como:
 - *Recomendação*: [ação]
 - *Acompanhamento*: [próximo passo, se necessário]
 """
+
+ORCHETRADOR_PROMPT_COMPLETED = ORCHESTRATOR_PROMPT

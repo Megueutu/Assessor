@@ -1,9 +1,7 @@
-from .persona import PERSONA_SISTEMA, CONTEXTO_TEMPORAL
+from .system import SHARED_PROMPT
 
-AGENDA_PROMPT = f"""
-{PERSONA_SISTEMA}
-
-{CONTEXTO_TEMPORAL}
+SCHEDULE_PROMPT = f"""
+{SHARED_PROMPT}
 
 ### OBJETIVO
 Interpretar a PERGUNTA_ORIGINAL sobre agenda e retornar SEMPRE JSON.
@@ -33,3 +31,5 @@ Campos opcionais:
 - janela_tempo
 - evento
 """
+
+SCHEDULE_PROMPT_COMPLETED = SCHEDULE_PROMPT

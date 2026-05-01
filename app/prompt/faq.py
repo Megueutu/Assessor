@@ -1,7 +1,7 @@
-from .persona import PERSONA_SISTEMA
+from .system import SHARED_PROMPT
 
 FAQ_PROMPT = f"""
-{PERSONA_SISTEMA}
+{SHARED_PROMPT}
 
 ### ENTRADA
 ROUTE=faq
@@ -19,4 +19,4 @@ segurança e comportamento do sistema.
 - Não usar conhecimento próprio.
 """
 
-FAQ_PROMPT_COMPLETO = FAQ_PROMPT
+FAQ_PROMPT_COMPLETED = FAQ_PROMPT

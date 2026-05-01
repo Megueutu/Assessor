@@ -1,9 +1,7 @@
-from .persona import PERSONA_SISTEMA, CONTEXTO_TEMPORAL
+from .system import SHARED_PROMPT
 
 ROUTER_PROMPT = f"""
-{PERSONA_SISTEMA}
-
-{CONTEXTO_TEMPORAL}
+{SHARED_PROMPT}
 
 ### PAPEL
 - Acolher o usuário e manter o foco em FINANÇAS ou AGENDA/compromissos.
@@ -45,8 +43,7 @@ ROUTE=agenda
 PERGUNTA_ORIGINAL=[mensagem completa]
 """
 
-ROUTER_PROMPT_COMPLETO = f"""
+ROUTER_PROMPT_COMPLETED = f"""
 {ROUTER_PROMPT}
-
 {ROUTER_SHOTS}
 """

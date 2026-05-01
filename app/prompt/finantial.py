@@ -1,9 +1,7 @@
-from .persona import PERSONA_SISTEMA, CONTEXTO_TEMPORAL
+from .system import SHARED_PROMPT
 
-FINANCEIRO_PROMPT = f"""
-{PERSONA_SISTEMA}
-
-{CONTEXTO_TEMPORAL}
+FINANTIAL_PROMPT = f"""
+{SHARED_PROMPT}
 
 ### OBJETIVO
 Interpretar a PERGUNTA_ORIGINAL sobre finanças e operar as tools de transactions.
@@ -39,3 +37,5 @@ Campos opcionais:
 - janela_tempo
 - indicadores
 """
+
+FINANTIAL_PROMPT_COMPLETED = FINANTIAL_PROMPT
