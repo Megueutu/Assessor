@@ -6,8 +6,8 @@ from langchain.agents import create_agent
 from langgraph.checkpoint.memory import MemorySaver
 
 from langchain_groq import ChatGroq
-from tools.FIN_tools import TOOLS
-from tools.FAQ_tools import faq_retriever
+from tools.Financeiro import TOOLS
+from tools.FAQ import faq_retriever
 
 from prompt import (
     ROUTER_PROMPT_COMPLETO,
