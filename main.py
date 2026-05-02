@@ -1,21 +1,32 @@
 from app.workflow.flow import assessor_flow
 
-BREAKWAYS = ('exit', 'quit', 'close', 'encerrar')
+BREAKWAYS = {"exit", "quit", "close", "encerrar", "sair"}
 
 def main():
-    try:
-        message = input("😎 > ").strip()
-        if message.lower() in BREAKWAYS:
+    print(f'\nAssessor iniciado! Digite: {", ".join(BREAKWAYS)} para encerrar.')
+
+    session_id = "id_usuario_mas_agora_não_importa"
+
+    while True:
+        try:
+            message = input("😎 > ").strip()
+
+            if message.lower() in BREAKWAYS:
+                print("\nEncerrando a conversa.")
+                break
+
+            answer = assessor_flow(
+                pergunta_usuario=message,
+                session_id=session_id
+            )
+            print(f"🤖 > {answer}\n")
+
+        except KeyboardInterrupt:
             print("\nEncerrando a conversa.")
-            return
-        
-        answer = assessor_flow(pergunta_usuario=message, session_id="id_usuario_mas_agora_não_importa")
-        print("🤖 > " + answer + "\n")
-    
-    except Exception as e:
-        print(f'Erro: {e}')
+            break
 
-print(f'\nAssessor iniciado! Digite: ("{'", "'.join(BREAKWAYS)}") para encerrar.')
+        except Exception as e:
+            print(f"Erro: {e}")
 
-while 1:
+if __name__ == "__main__":
     main()

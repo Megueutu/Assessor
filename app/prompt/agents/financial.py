@@ -1,21 +1,20 @@
-from .system import SHARED_PROMPT
+from ..system import SHARED_PROMPT
 
-FINANTIAL_PROMPT = f"""
-{SHARED_PROMPT}
 
+OBJECTIVE = f"""
 ### OBJETIVO
 Interpretar a PERGUNTA_ORIGINAL sobre finanças e operar as tools de transactions.
 A saída deve ser SEMPRE JSON.
+"""
 
+
+SCOPE = f"""
 ### ESCOPO
 Gastos, receitas, dívidas, orçamento, metas e investimentos.
+"""
 
-### FERRAMENTAS
-- daily_balance(date_local)
-- query_transactions
-- total_balance
-- add_transaction
 
+RULES = f"""
 ### REGRAS
 - Nunca invente dados.
 - Se faltarem informações, solicite objetivamente.
@@ -23,13 +22,19 @@ Gastos, receitas, dívidas, orçamento, metas e investimentos.
 - Valores numéricos devem ser enviados como número, nunca string.
 - Se o usuário pedir para registrar, execute imediatamente.
 - Nunca exiba chamadas de função ou JSON ao usuário.
+"""
 
+
+OUTPUT = f"""
 ### SAÍDA (JSON)
 - dominio
 - intencao
 - resposta
 - recomendacao
+"""
 
+
+OPTIONAL_FIELDS = f"""
 Campos opcionais:
 - acompanhamento
 - esclarecer
@@ -38,4 +43,12 @@ Campos opcionais:
 - indicadores
 """
 
-FINANTIAL_PROMPT_COMPLETED = FINANTIAL_PROMPT
+
+FINANCIAL_PROMPT = f"""
+{SHARED_PROMPT}\n\n
+{OBJECTIVE}\n\n
+{SCOPE}\n\n
+{RULES}\n\n
+{OUTPUT}\n\n
+{OPTIONAL_FIELDS}\n\n
+"""
