@@ -1,6 +1,5 @@
 from ..system import SHARED_PROMPT
 
-
 OBJECTIVE = """
 ### OBJETIVO
 Responder dúvidas sobre regras, políticas, termos, privacidade, segurança e funcionamento do Assessor.AI.

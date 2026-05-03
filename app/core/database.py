@@ -1,15 +1,15 @@
-from .config import DATABASE_URL
+from .config import config
 from psycopg2 import connect
 from contextlib import contextmanager
 
 
-def get_conn():
-    return connect(DATABASE_URL)
+def _get_conn():
+    return connect(config.DATABASE_URL)
 
 
 @contextmanager
 def get_cursor():
-    conn = get_conn()
+    conn = _get_conn()
     cur = conn.cursor()
     try:
         yield conn, cur

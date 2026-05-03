@@ -8,7 +8,7 @@ from langchain_community.vectorstores import FAISS
 
 
 @tool
-def faq_retriever(query: str) -> str:
+def retriever(query: str) -> str:
     """Busca informações no documento FAQ com base na pergunta do usuário."""
     loader = PyPDFLoader(config.FAQ_PDF_PATH)
     docs = loader.load()
@@ -20,6 +20,3 @@ def faq_retriever(query: str) -> str:
     results = db.similarity_search(query, k=6)
 
     return "\n\n".join([result.page_content for result in results])
-
-
-TOOLS = [faq_retriever]

@@ -1,13 +1,16 @@
-from pydantic import BaseModel, Field, Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 
 
-class AddTransactionArgs(BaseModel):
-    amount:         float         = Field(...,          description="Valor da transação (use positivo).")
-    source_text:    Optional[str] = Field(default=None, description="Texto original do usuário.")
+class BaseModelTransaction():
+    source_text: Optional[str] = Field(default=None, description="Texto original do usuário.")
+    type_name:   Optional[str] = Field(default=None, description="Tipo da transação: INCOME | EXPENSES | TRANSFER.")
+
+
+class AddTransactionArgs(BaseModelTransaction):
+    amount:         float         = Field(...,          description="Valor da transação.")
     occurred_at:    Optional[str] = Field(default=None, description="Timestamp ISO 8601; se ausente, usa NOW() no banco.")
     type_id:        Optional[int] = Field(default=None, description="ID em transaction_types (1=INCOME, 2=EXPENSES, 3=TRANSFER).",)
-    type_name:      Optional[str] = Field(default=None, description="Nome do tipo: INCOME | EXPENSES | TRANSFER.")
     category_id:    Optional[int] = Field(default=None, description="FK de categories (opcional).")
     category_name:  Optional[str] = Field(default=None, description="Nome da categoria: comida, transporte, moradia, saúde, lazer, contas, besteira, estudo, férias, investimento, presente, outros.",)
     description:    Optional[str] = Field(default=None, description="Descrição (opcional).")
@@ -22,11 +25,9 @@ class AddTransactionArgs(BaseModel):
             raise ValueError(f"amount deve ser numérico, recebido: {v!r}")
 
 
-class QueryTransactionsArgs(BaseModel):
-    source_text:     Optional[str] = Field(default=None, description="Texto livre para buscar em source_text ou description.",)
+class QueryTransactionsArgs(BaseModelTransaction):
     date_from_local: Optional[str] = Field(default=None, description="Data inicial (YYYY-MM-DD) no fuso de São Paulo.")
     date_to_local:   Optional[str] = Field(default=None, description="Data final (YYYY-MM-DD) no fuso de São Paulo.")
-    type_name:       Optional[str] = Field(default=None, description="Tipo: INCOME | EXPENSES | TRANSFER.")
     category_name:   Optional[str] = Field(default=None, description="Nome da categoria (ex: COMIDA, TRANSPORTE).")
 
 

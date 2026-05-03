@@ -1,6 +1,5 @@
 from ..system import SHARED_PROMPT
 
-
 OBJECTIVE = f"""
 ### OBJETIVO
 Interpretar a PERGUNTA_ORIGINAL sobre finanças e operar as tools de transactions.

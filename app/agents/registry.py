@@ -1,9 +1,11 @@
-from .schedule import SCHEDULE_AGENT
-from .financial import FINANCIAL_AGENT
-from .faq import FAQ_AGENT
+from app.agents.schedule import SCHEDULE_AGENT
+from app.agents.financial import FINANCIAL_AGENT
+from app.agents.faq import FAQ_AGENT
+from app.agents.notes import NOTES_AGENT
 
 SPECIALIST_AGENTS = {
     "financeiro": FINANCIAL_AGENT,
     "agenda": SCHEDULE_AGENT,
     "faq": FAQ_AGENT,
+    "notes": NOTES_AGENT,
 }

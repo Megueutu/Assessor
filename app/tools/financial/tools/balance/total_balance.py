@@ -1,33 +1,36 @@
+from langchain_core.tools import tool
+
+from app.core.database import get_cursor
+from app.tools.response import ToolResponse
+
+
+_SQL = """
+SELECT
+    SUM(CASE WHEN type = 1 THEN amount ELSE 0 END),
+    SUM(CASE WHEN type = 2 THEN amount ELSE 0 END)
+FROM transactions
+"""
+
 
 @tool("total_balance")
 def total_balance() -> dict:
     """Busca no banco de dados o saldo total de todas as transações."""
 
-    conn = get_conn()
-    cur = conn.cursor()
-
     try:
-        cur.execute("""
-            SELECT
-                SUM(CASE WHEN type = 1 THEN amount ELSE 0 END),
-                SUM(CASE WHEN type = 2 THEN amount ELSE 0 END)
-            FROM transactions
-        """)
+        with get_cursor() as (_, cur):
+            cur.execute(_SQL)
+            gain, expenses = cur.fetchone()
 
-        ganhos, gastos = cur.fetchone()
-        ganhos = float(ganhos or 0)
-        gastos = float(gastos or 0)
+        gain = float(gain or 0)
+        expenses = float(expenses or 0)
 
-        return {
-            "status": "ok",
-            "total_income": ganhos,
-            "total_expenses": gastos,
-            "saldo_geral": ganhos - gastos,
-        }
+        return ToolResponse.ok(
+            sql_return={
+                "total_income": gain,
+                "total_expenses": expenses,
+                "saldo_geral": gain - expenses,
+            }
+        )
 
     except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-    finally:
-        cur.close()
-        conn.close()
+        return ToolResponse.error(message=str(e))

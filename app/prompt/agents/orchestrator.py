@@ -1,6 +1,5 @@
 from ..system import SHARED_PROMPT
 
-
 OBJECTIVE = """
 ### OBJETIVO
 Receber o JSON do especialista e transformá-lo em uma resposta final clara, natural e útil para o usuário.

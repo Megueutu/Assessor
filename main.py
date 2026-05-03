@@ -4,21 +4,16 @@ BREAKWAYS = {"exit", "quit", "close", "encerrar", "sair"}
 
 def main():
     print(f'\nAssessor iniciado! Digite: {", ".join(BREAKWAYS)} para encerrar.')
-
-    session_id = "id_usuario_mas_agora_não_importa"
+    session_id = "id_usuario"
 
     while True:
         try:
             message = input("😎 > ").strip()
-
             if message.lower() in BREAKWAYS:
                 print("\nEncerrando a conversa.")
                 break
 
-            answer = assessor_flow(
-                pergunta_usuario=message,
-                session_id=session_id
-            )
+            answer = assessor_flow(message, session_id=session_id)
             print(f"🤖 > {answer}\n")
 
         except KeyboardInterrupt:

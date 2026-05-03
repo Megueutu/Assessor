@@ -2,8 +2,11 @@ from typing import Optional
 from .loader import PAYMENT_TYPE_ALIASES, CATEGORY_ALIASES
 
 def resolve_type_id(
-    cur, type_id: Optional[int], type_name: Optional[str]
+    cur,
+    type_id:   Optional[int],
+    type_name: Optional[str]
 ) -> Optional[int]:
+    
     if type_name:
         t = type_name.strip().upper()
         if t in PAYMENT_TYPE_ALIASES:
@@ -18,8 +21,11 @@ def resolve_type_id(
 
 
 def resolve_category_id(
-    cur, category_id: Optional[int], category_name: Optional[str]
+    cur,
+    category_id:   Optional[int],
+    category_name: Optional[str]
 ) -> Optional[int]:
+    
     if category_name:
         c = category_name.strip().upper()
 

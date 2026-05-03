@@ -1,43 +1,39 @@
+from langchain_core.tools import tool
+    
+from app.core.database import get_cursor
+from app.tools.response import ToolResponse
+
+
+_SQL = """
+SELECT
+    SUM(CASE WHEN type = 1 THEN amount ELSE 0 END),
+    SUM(CASE WHEN type = 2 THEN amount ELSE 0 END)
+FROM transactions
+WHERE (occurred_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo')::date = %s
+AND type IN (1, 2)
+"""
+
 
 @tool("daily_balance")
 def daily_balance(date_local: str) -> dict:
     """Busca no banco de dados o saldo total das transações do dia informado (YYYY-MM-DD)."""
 
-    conn = get_conn()
-    cur = conn.cursor()
-
     try:
-        cur.execute(
-            """
-            SELECT
-                SUM(CASE WHEN type = 1 THEN amount ELSE 0 END),
-                SUM(CASE WHEN type = 2 THEN amount ELSE 0 END)
-            FROM transactions
-            WHERE (occurred_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo')::date = %s
-            AND type IN (1, 2)
-        """,
-            (date_local,),
+        with get_cursor() as (_, cur):
+            cur.execute(_SQL, (date_local,))
+            gain, expenses = cur.fetchone()
+
+        gain = float(gain or 0)
+        expenses = float(expenses or 0)
+
+        return ToolResponse.ok(
+            sql_return={
+                "data": date_local,
+                "total_income": gain,
+                "total_expenses": expenses,
+                "saldo": gain - expenses,
+            }
         )
 
-        ganhos, gastos = cur.fetchone()
-        ganhos = float(ganhos or 0)
-        gastos = float(gastos or 0)
-
-        return {
-            "status": "ok",
-            "data": date_local,
-            "total_income": ganhos,
-            "total_expenses": gastos,
-            "saldo": ganhos - gastos,
-        }
-
     except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-    finally:
-        try:
-            cur.close()
-            conn.close()
-        except Exception:
-            pass
-            
+        return ToolResponse.error(message=str(e))

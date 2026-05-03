@@ -1,6 +1,5 @@
 from ..system import SHARED_PROMPT
 
-
 OBJECTIVE = """
 ### OBJETIVO
 Interpretar a PERGUNTA_ORIGINAL sobre agenda e operar as tools de calendário.

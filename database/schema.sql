@@ -43,3 +43,13 @@ CREATE TABLE IF NOT EXISTS events (
 
 CREATE INDEX IF NOT EXISTS idx_events_start_time
   ON events (start_time DESC);
+
+CREATE TABLE IF NOT EXISTS notes (
+  id           BIGSERIAL PRIMARY KEY,
+  content      TEXT NOT NULL,
+  source_text  TEXT NOT NULL,
+  items        TEXT[] DEFAULT '{}',
+  concluded    BOOLEAN NOT NULL DEFAULT FALSE,
+  recorded_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  concluded_at TIMESTAMPTZ
+);
