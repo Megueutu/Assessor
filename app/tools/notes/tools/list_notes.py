@@ -25,7 +25,7 @@ _SQL_ORDER        = " ORDER BY recorded_at DESC LIMIT %s"
 def list_notes(
     note_id: Optional[int]       = None,
     content: Optional[str]       = None,
-    itens:   Optional[list[str]] = None,
+    items:   Optional[list[str]] = None,
     state:   Optional[bool]      = None,
     limit:   Optional[int]       = 20
 ) -> dict:
@@ -63,9 +63,9 @@ def list_notes(
                 sql += _SQL_FILTER_STATE
                 params.append(state)
                 
-            if itens:
+            if items:
                 sql += _SQL_FILTER_ITEMS
-                for item in itens:
+                for item in items:
                     sql += _SQL_FILTER_ITEMS
                     params.append(item)
                 
