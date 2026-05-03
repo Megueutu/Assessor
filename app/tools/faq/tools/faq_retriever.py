@@ -7,8 +7,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 
 
-@tool
-def retriever(query: str) -> str:
+@tool("faq_retriever")
+def faq_retriever(query: str) -> str:
     """Busca informações no documento FAQ com base na pergunta do usuário."""
     loader = PyPDFLoader(config.FAQ_PDF_PATH)
     docs = loader.load()

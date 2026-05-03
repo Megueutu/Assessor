@@ -1,4 +1,4 @@
-from langchain_core.tools import tool
+from langchain.tools import tool
 from typing import Optional
 
 from app.core.database import get_cursor
@@ -68,12 +68,12 @@ def update_transaction(
             resolved_cat  = get_category_id(cur, category_name) if (category_name and not category_id) else category_id
 
             updates = {
-                "amount":        amount,
-                "resolved_type": resolved_type,
-                "resolved_cat":  resolved_cat,
-                "description":   description,
-                "payment_method":payment_method,
-                "occurred_at":   occurred_at,
+                "amount":         amount,
+                "resolved_type":  resolved_type,
+                "resolved_cat":   resolved_cat,
+                "description":    description,
+                "payment_method": payment_method,
+                "occurred_at":    occurred_at,
             }
 
             sets   = [_UPDATABLE_FIELDS[k] for k, v in updates.items() if v is not None]

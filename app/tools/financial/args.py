@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 from typing import Optional
 
 
-class BaseModelTransaction():
+class BaseModelTransaction(BaseModel):
     source_text: Optional[str] = Field(default=None, description="Texto original do usuário.")
     type_name:   Optional[str] = Field(default=None, description="Tipo da transação: INCOME | EXPENSES | TRANSFER.")
 
@@ -15,14 +15,6 @@ class AddTransactionArgs(BaseModelTransaction):
     category_name:  Optional[str] = Field(default=None, description="Nome da categoria: comida, transporte, moradia, saúde, lazer, contas, besteira, estudo, férias, investimento, presente, outros.",)
     description:    Optional[str] = Field(default=None, description="Descrição (opcional).")
     payment_method: Optional[str] = Field(default=None, description="Forma de pagamento (opcional).")
-
-    @field_validator("amount", mode="before")
-    @classmethod
-    def coerce_amount(cls, v):
-        try:
-            return float(v)
-        except (TypeError, ValueError):
-            raise ValueError(f"amount deve ser numérico, recebido: {v!r}")
 
 
 class QueryTransactionsArgs(BaseModelTransaction):

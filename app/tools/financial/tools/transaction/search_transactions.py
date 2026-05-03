@@ -1,4 +1,4 @@
-from langchain_core.tools import tool
+from langchain.tools import tool
 from typing import Optional
 
 from app.core.database import get_cursor
@@ -22,8 +22,8 @@ _SQL_FILTER_TO       = " AND (t.occurred_at AT TIME ZONE 'UTC' AT TIME ZONE 'Ame
 _SQL_ORDER           = " ORDER BY t.occurred_at DESC LIMIT 20"
 
 
-@tool("query_transactions", args_schema=QueryTransactionsArgs)
-def query_transactions(
+@tool("search_transactions", args_schema=QueryTransactionsArgs)
+def search_transactions(
     source_text:     Optional[str] = None,
     date_from_local: Optional[str] = None,
     date_to_local:   Optional[str] = None,

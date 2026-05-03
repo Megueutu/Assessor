@@ -1,4 +1,4 @@
-from langchain_core.tools import tool
+from langchain.tools import tool
 
 from app.core.database import get_cursor
 from app.tools.response import ToolResponse

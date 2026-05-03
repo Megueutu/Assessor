@@ -2,6 +2,11 @@ from app.workflow.flow import assessor_flow
 
 BREAKWAYS = {"exit", "quit", "close", "encerrar", "sair"}
 
+# Mostrar o agente utilizado por meio de emotes.
+# Configuracoes no menu:
+#  1. Personalidades
+#  2. Agentes disponíveis
+
 def main():
     print(f'\nAssessor iniciado! Digite: {", ".join(BREAKWAYS)} para encerrar.')
     session_id = "id_usuario"

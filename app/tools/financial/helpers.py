@@ -1,5 +1,5 @@
 from typing import Optional
-from .loader import PAYMENT_TYPE_ALIASES, CATEGORY_ALIASES
+from .loader import PAYMENT_METHOD_ALIASES, CATEGORY_ALIASES
 
 def resolve_type_id(
     cur,
@@ -9,8 +9,8 @@ def resolve_type_id(
     
     if type_name:
         t = type_name.strip().upper()
-        if t in PAYMENT_TYPE_ALIASES:
-            t = PAYMENT_TYPE_ALIASES[t]
+        if t in PAYMENT_METHOD_ALIASES:
+            t = PAYMENT_METHOD_ALIASES[t]
         cur.execute(
             "SELECT id FROM transaction_types WHERE UPPER(type)=%s LIMIT 1;", (t,)
         )
