@@ -3,8 +3,8 @@ from typing import Optional
 
 
 class AddNoteArgs(BaseModel):
-    source_text:  str            = Field(...,           description="Texto original do usuário.")
-    item:         Optional[str]  = Field(default=None,  description="Item associado à nota.")
+    source_text: str = Field(..., description="Texto original do usuário.")
+    items: Optional[list[str]] = Field(default=None, description="Lista de itens da nota.")
 
 
 class ConcludeNoteArgs(BaseModel):

@@ -5,5 +5,5 @@ from app.prompt.agents.orchestrator import ORCHESTRATOR_PROMPT
 
 ORCHESTRATOR_AGENT = create_agent(
     model=FAST_LLM,
-    system_prompt=ORCHESTRATOR_PROMPT,
+    system_prompt=ORCHESTRATOR_PROMPT(),
 )

@@ -6,6 +6,6 @@ from app.core.memory import ROUTER_MEMORY
 
 ROUTER_AGENT = create_agent(
     model=FAST_LLM,
-    system_prompt=ROUTER_PROMPT,
+    system_prompt=ROUTER_PROMPT(),
     checkpointer=ROUTER_MEMORY
 )

@@ -15,7 +15,7 @@ RETURNING id, content, items, recorded_at
 
 
 @tool("add_note", args_schema=AddNoteArgs)
-def add_note(source_text: str, items: Optional[list[str]]) -> dict:
+def add_note(source_text: str, items: Optional[list[str]] = None) -> dict:
     """Cria uma nova nota ou checklist para o usuário com base em sua mensagem."""
 
     try:
