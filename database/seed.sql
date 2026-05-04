@@ -40,3 +40,25 @@ INSERT INTO transactions (amount, type, category_id, description, payment_method
   (800.00, 1, 12, 'Freelance', 'PIX', '2026-04-18 17:00:00-03', 'Pagamento por projeto freelancer'),
   (250.00, 2, 8, 'Passeio de fim de semana', 'Cartão de Crédito', '2026-04-20 14:00:00-03', 'Atividades de lazer'),
   (110.00, 2, 1, 'Almoço em restaurante', 'Débito', '2026-04-22 12:30:00-03', 'Almoço de negócios');
+
+INSERT INTO notes (content, source_text, items, concluded, recorded_at, concluded_at) VALUES
+  ('Comprar mantimentos da semana', 'Lista mental antes de sair', ARRAY['arroz','feijão','leite','ovos'], FALSE, '2026-04-01 09:00:00-03', NULL),
+  ('Finalizar relatório mensal', 'Demanda do trabalho', ARRAY['dados','gráficos','revisão'], TRUE, '2026-04-01 10:00:00-03', '2026-04-02 15:00:00-03'),
+  ('Treino na academia', 'Planejamento diário', ARRAY['peito','tríceps','cardio'], FALSE, '2026-04-02 07:00:00-03', NULL),
+  ('Estudar SQL', 'Meta de aprendizado', ARRAY['joins','indexes','CTE'], FALSE, '2026-04-02 20:00:00-03', NULL),
+  ('Pagar contas do mês', 'Lembrete financeiro', ARRAY['luz','água','internet'], TRUE, '2026-04-03 08:00:00-03', '2026-04-03 09:00:00-03'),
+  ('Organizar workspace', 'Produtividade', ARRAY['limpeza','cabos','arquivos'], TRUE, '2026-04-03 18:00:00-03', '2026-04-03 19:00:00-03'),
+  ('Planejar viagem', 'Conversa com amigos', ARRAY['passagens','hotel','roteiro'], FALSE, '2026-04-04 12:00:00-03', NULL),
+  ('Ler livro técnico', 'Estudo contínuo', ARRAY['cap1','cap2','anotações'], FALSE, '2026-04-04 22:00:00-03', NULL),
+  ('Atualizar currículo', 'Busca de oportunidades', ARRAY['experiências','skills'], TRUE, '2026-04-05 14:00:00-03', '2026-04-05 16:00:00-03'),
+  ('Reunião com equipe', 'Sprint semanal', ARRAY['status','bloqueios'], TRUE, '2026-04-06 10:00:00-03', '2026-04-06 11:00:00-03'),
+  ('Backup dos arquivos', 'Segurança de dados', ARRAY['docs','fotos'], TRUE, '2026-04-06 23:00:00-03', '2026-04-06 23:30:00-03'),
+  ('Estudar inglês', 'Rotina diária', ARRAY['listening','speaking'], FALSE, '2026-04-07 19:00:00-03', NULL),
+  ('Ir ao médico', 'Check-up anual', ARRAY['exames','consulta'], TRUE, '2026-04-08 09:00:00-03', '2026-04-08 10:30:00-03'),
+  ('Planejar semana', 'Organização pessoal', ARRAY['tarefas','prioridades'], TRUE, '2026-04-09 08:00:00-03', '2026-04-09 08:45:00-03'),
+  ('Limpar a casa', 'Rotina doméstica', ARRAY['quarto','sala','cozinha'], FALSE, '2026-04-10 11:00:00-03', NULL),
+  ('Assistir curso online', 'Capacitação', ARRAY['aula1','aula2'], FALSE, '2026-04-10 21:00:00-03', NULL),
+  ('Configurar projeto novo', 'Dev task', ARRAY['repo','env','db'], TRUE, '2026-04-11 15:00:00-03', '2026-04-11 18:00:00-03'),
+  ('Responder emails', 'Trabalho', ARRAY['clientes','interno'], TRUE, '2026-04-12 09:30:00-03', '2026-04-12 10:15:00-03'),
+  ('Caminhada no parque', 'Saúde', ARRAY['alongamento'], FALSE, '2026-04-13 07:00:00-03', NULL),
+  ('Revisar código', 'Code review', ARRAY['PR1','PR2','feedback'], TRUE, '2026-04-14 16:00:00-03', '2026-04-14 17:30:00-03');
