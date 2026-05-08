@@ -49,7 +49,7 @@ def list_notes(
                 })
             
             
-
+            
             sql = _SQL_BASE
             params = []
             

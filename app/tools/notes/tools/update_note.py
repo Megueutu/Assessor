@@ -16,7 +16,7 @@ _SQL_STATE   = "concluded = %s, concluded_at = NOW()"
 
 _SQL_UPDATE_TAIL = """
 WHERE id = %s
-RETURNING id, source_text, content, items, concluded, recorded_at, concluded_at
+RETURNING *
 """
 
 

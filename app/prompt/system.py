@@ -1,7 +1,8 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from app.core.config import config
 
-def _now() -> str: return datetime.now(config.APP_TIMEZONE).strftime("%A, %d de %B de %Y — %H:%M:%S %Z")
+def _now() -> str: return datetime.now(ZoneInfo(config.TIMEZONE_REGION)).strftime("%A, %d de %B de %Y — %H:%M:%S %Z")
 
 
 _SYS_PERSONA = """

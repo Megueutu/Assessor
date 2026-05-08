@@ -6,7 +6,7 @@ from app.tools.notes.args import AddNoteArgs
 from app.core.database import get_cursor
 from app.core.llms import FAST_LLM
 
-    
+
 _SQL = """
 INSERT INTO notes (source_text, content, items)
 VALUES (%s, %s, %s)
