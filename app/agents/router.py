@@ -1,5 +1,5 @@
 from langchain.agents import create_agent
-from app.core.llms import FAST_LLM
+from app.core.llms    import FAST_LLM
 
 from app.prompt.agents.router import ROUTER_PROMPT
 from app.core.memory import ROUTER_MEMORY

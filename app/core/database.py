@@ -1,5 +1,5 @@
-from .config import config
-from psycopg2 import connect
+from .config    import config
+from psycopg2   import connect
 from contextlib import contextmanager
 
 

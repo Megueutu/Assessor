@@ -1,5 +1,5 @@
 from langchain.agents import create_agent
-from app.core.llms import SPECIALIST_LLM
+from app.core.llms    import SPECIALIST_LLM
 
 from app.prompt.agents.specialist.schedule import SCHEDULE_PROMPT
 
