@@ -1,9 +1,9 @@
 import json
 
-from app.agents.registry import SPECIALIST_AGENTS
-from app.agents.router import ROUTER_AGENT
+from app.workflow.target     import Target
+from app.agents.router       import ROUTER_AGENT
+from app.agents.registry     import SPECIALIST_AGENTS
 from app.agents.orchestrator import ORCHESTRATOR_AGENT
-from app.workflow.target import Target
 
 
 def _format_router_answer(text: str) -> dict:

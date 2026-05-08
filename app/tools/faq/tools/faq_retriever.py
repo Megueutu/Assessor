@@ -1,10 +1,10 @@
 from app.core.config import config
-from app.core.llms import EMBEDDING_MODEL
+from app.core.llms   import EMBEDDING_MODEL
 
 from langchain.tools import tool
-from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.vectorstores     import FAISS
 
 
 loader = PyPDFLoader(config.FAQ_PDF_PATH)

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing  import Optional
 from .loader import PAYMENT_METHOD_ALIASES, CATEGORY_ALIASES
 
 def resolve_type_id(
