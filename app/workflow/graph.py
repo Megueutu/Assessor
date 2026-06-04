@@ -1,87 +1,78 @@
 import operator
+from typing import Annotated
 
-from typing              import Annotated
-from langgraph.graph     import StateGraph, MessagesState, END
-
+from langgraph.graph import StateGraph, MessagesState, END
+from langgraph.constants import Send
 from langgraph.checkpoint.memory import MemorySaver
-from app.agents.registry         import AGENTS
 
-
-MEMORY = MemorySaver()
+from app.workflow.nodes import orchestrator_node, router_node
+from app.core.constants.agents import Agent
+from app.core.constants.flow import Flow 
+from app.agents.registry import AGENTS
 
 
 class GraphState(MessagesState):
-    messages: list[dict[str, str], operator.add]
     called: Annotated[list[str], operator.add]
-    routes: Annotated[list[str], operator.add]
+    intent: Annotated[dict[str, bool], operator.or_]
+    flow: Flow
 
 
-def router_node(state: GraphState) -> dict:
-    saida = AGENTS["router"].invoke(
-        {"messages": [{"role": "human", "content": state["input"]}]},
-        config={"configurable": {"thread_id": state["session_id"]}},
-    )
-    texto = saida["messages"][-1].text
+def dispatch(state: GraphState):
+    sends, flow, intent = list(), state["flow"], state["intent"]
 
-    if not texto.strip().startswith("ROUTE="):
-        return {
-            "called": ["router"],
-            "final_response":   texto,
-        }
+    if flow == Flow.SPECIALIST:
+        if intent.get(Agent.FINANCIAL): sends.append(Send(Agent.FINANCIAL, state))
+        if intent.get(Agent.SCHEDULE):  sends.append(Send(Agent.SCHEDULE, state))
 
-    return {
-        "input":            texto,
-        "called": ["router"],
-    }
+    elif flow == Flow.REFER:
+        if intent.get(Agent.FAQ): sends.append(Send(Agent.FAQ, state))
+
+    return sends
 
 
-def orchestrator_node(state: GraphState) -> dict:
-    saida = AGENTS["orchestrator"].invoke(
-        {"messages": [{"role": "human", "content": state["saida_especialista"]}]},
-        config={"configurable": {"thread_id": {state['session_id']}}},
-    )
-    return {
-        "final_response":   saida["messages"][-1].text,
-        "called": ["orchestrator"],
-    }
+def decide_flow(state: GraphState) -> str:
+    if state["flow"]   == Flow.DIRECT:     return Flow.DIRECT
+    elif state["flow"] == Flow.SPECIALIST: return Flow.SPECIALIST
+    elif state["flow"] == Flow.REFER:      return Flow.REFER
+
+    raise Exception("Something went wrong with the system.")
 
 
-def decide_agent(state: GraphState) -> str:
-    """Lê o protocolo do roteador e devolve o nome do próximo nó."""
-    texto = state["input"].strip()
+GRAPH, PLANNER = StateGraph(GraphState), "planner"
 
-    if not texto.startswith("ROUTE="):
-        return "fim"
+GRAPH.add_node(Agent.ROUTER, router_node)
+GRAPH.add_node(Agent.ORCHESTRATOR, orchestrator_node)
 
-    rota = texto.split("\n", 1)[0].split("=", 1)[1].strip()
-    return rota if rota in ("financeiro", "agenda", "faq") else "fim"
+GRAPH.set_entry_point(Agent.ROUTER)
 
-
-GRAPH = StateGraph(GraphState)
-
-GRAPH.add_node("router", router_node)
-GRAPH.add_node("orchestrator", orchestrator_node)
-GRAPH.add_node("financial", AGENTS["financial"])
-GRAPH.add_node("schedule", AGENTS["schedule"])
-GRAPH.add_node("faq", AGENTS["faq"])
-
-GRAPH.set_entry_point("router")
+GRAPH.add_node(Agent.FINANCIAL, AGENTS[Agent.FINANCIAL])
+GRAPH.add_node(Agent.SCHEDULE,  AGENTS[Agent.SCHEDULE])
+GRAPH.add_node(Agent.NOTES,     AGENTS[Agent.NOTES])
+GRAPH.add_node(Agent.FAQ,       AGENTS[Agent.FAQ])
+GRAPH.add_node(PLANNER, dispatch)
 
 GRAPH.add_conditional_edges(
-    "router",
-    decide_agent,
+    Agent.ROUTER,
+    decide_flow,
     {
-        "financeiro": "financial",
-        "agenda":     "schedule",
-        "faq":        "faq",
-        "fim":        END,
+        Flow.SPECIALIST: PLANNER,
+        Flow.REFER: PLANNER,
+        Flow.DIRECT: END,
     },
 )
 
-GRAPH.add_edge("financial", "orchestrator")
-GRAPH.add_edge("schedule", "orchestrator")
+GRAPH.add_conditional_edges(
+    PLANNER,
+    dispatch
+)
 
-GRAPH.add_edge("orchestrator", END)
-GRAPH.add_edge("faq", END)
+GRAPH.add_edge(Agent.FINANCIAL, Agent.ORCHESTRATOR)
+GRAPH.add_edge(Agent.SCHEDULE,  Agent.ORCHESTRATOR)
+GRAPH.add_edge(Agent.NOTES,     Agent.ORCHESTRATOR)
+GRAPH.add_edge(Agent.FAQ, Agent.ORCHESTRATOR) # FAQ também retorna ao orquestrador
 
+GRAPH.add_edge(Agent.ORCHESTRATOR, END)
+
+
+MEMORY = MemorySaver()
 AGENTS_WORKFLOW = GRAPH.compile(checkpointer=MEMORY)

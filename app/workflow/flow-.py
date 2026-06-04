@@ -16,3 +16,6 @@ def executar_fluxo_assessor(pergunta_usuario: str, session_id: str) -> str:
 
     print(f"[debug] agentes chamados: {estado_final['agentes_chamados']}")
     return estado_final["resposta_final"]
+
+
+
