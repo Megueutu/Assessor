@@ -20,9 +20,12 @@ class GraphState(MessagesState):
 def dispatch(state: GraphState):
     sends, flow, intent = list(), state["flow"], state["intent"]
 
-    if flow == Flow.SPECIALIST:
+    if flow == Flow.DIRECT: return END
+
+    elif flow == Flow.SPECIALIST:
         if intent.get(Agent.FINANCIAL): sends.append(Send(Agent.FINANCIAL, state))
         if intent.get(Agent.SCHEDULE):  sends.append(Send(Agent.SCHEDULE, state))
+        if intent.get(Agent.NOTES):  sends.append(Send(Agent.NOTES, state))
 
     elif flow == Flow.REFER:
         if intent.get(Agent.FAQ): sends.append(Send(Agent.FAQ, state))
@@ -49,7 +52,6 @@ GRAPH.add_node(Agent.FINANCIAL, AGENTS[Agent.FINANCIAL])
 GRAPH.add_node(Agent.SCHEDULE,  AGENTS[Agent.SCHEDULE])
 GRAPH.add_node(Agent.NOTES,     AGENTS[Agent.NOTES])
 GRAPH.add_node(Agent.FAQ,       AGENTS[Agent.FAQ])
-GRAPH.add_node(PLANNER, dispatch)
 
 GRAPH.add_conditional_edges(
     Agent.ROUTER,
