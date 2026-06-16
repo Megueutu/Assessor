@@ -22,7 +22,7 @@ def main():
                 print(f"🤖 > {answer}\n")
         
         except KeyboardInterrupt:
-            print("🐳 > Encerrando a conversa.")
+            print("\n🐳 > Encerrando a conversa.")
             break
         
         except Exception as e:

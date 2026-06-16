@@ -1,18 +1,9 @@
 from pydantic import BaseModel
 from typing import Literal
 
-class RouterDecision(BaseModel):
-    flow: Literal[
-        "direct",
-        "business",
-        "faq"
-        ]
-    
-    agents: list[Literal[
-        "financial",
-        "schedule",
-        "notes",
-        "faq"
-    ]] = []
+from app.core.constants.flow import Flow
 
+class RouterDecision(BaseModel):
+    flow: Flow
+    intent: dict[str, bool]
     answer: str | None = None

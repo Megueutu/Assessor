@@ -2,19 +2,52 @@ import operator
 from typing import Annotated
 
 from langgraph.graph import StateGraph, MessagesState, END
-from langgraph.constants import Send
+from langgraph.types import Send
 from langgraph.checkpoint.memory import MemorySaver
 
-from app.workflow.nodes import orchestrator_node, router_node
 from app.core.constants.agents import Agent
 from app.core.constants.flow import Flow 
-from app.agents.registry import AGENTS
+from app.agents.registry import AGENTS, DEFS
 
 
 class GraphState(MessagesState):
     called: Annotated[list[str], operator.add]
     intent: Annotated[dict[str, bool], operator.or_]
-    flow: Flow
+    specialist_outputs: Annotated[list[str], operator.add]
+    flow: str
+    map_pii: dict
+
+
+def router_node(state: GraphState) -> dict:
+    decision = DEFS["router"](state["messages"])
+
+    if decision.flow == Flow.DIRECT:
+        if not decision.answer:
+            raise ValueError("Router retornou DIRECT sem answer.")
+
+        return {
+            "flow": Flow.DIRECT.value,
+            "messages": [
+                {
+                    "role": "assistant",
+                    "content": decision.answer
+                }
+            ]
+        }
+
+    return {
+        "flow": decision.flow,
+        "intent": decision.intent
+    }
+
+
+def orchestrator_node(state: GraphState) -> dict:
+    output = AGENTS[Agent.ORCHESTRATOR].invoke({"messages": state["messages"]})
+    
+    return {
+        "messages": [{"role": "assistant", "content": output["messages"][-1].text}],
+        "called": [Agent.ORCHESTRATOR],
+    }
 
 
 def dispatch(state: GraphState):
@@ -33,20 +66,24 @@ def dispatch(state: GraphState):
     return sends
 
 
-def decide_flow(state: GraphState) -> str:
-    if state["flow"]   == Flow.DIRECT:     return Flow.DIRECT
-    elif state["flow"] == Flow.SPECIALIST: return Flow.SPECIALIST
-    elif state["flow"] == Flow.REFER:      return Flow.REFER
+GRAPH = StateGraph(GraphState)
 
-    raise Exception("Something went wrong with the system.")
-
-
-GRAPH, PLANNER = StateGraph(GraphState), "planner"
+GRAPH.add_node(Agent.GUARDRAIL_IN, guardrail_in_node)
+GRAPH.add_node(Agent.GUARDRAIL_OUT, guardrail_out_node)
+GRAPH.add_conditional_edges(
+    Agent.GUARDRAIL_IN,
+    guardrail_dispatch,
+    {
+        Agent.ROUTER,
+        END
+    }
+)
 
 GRAPH.add_node(Agent.ROUTER, router_node)
 GRAPH.add_node(Agent.ORCHESTRATOR, orchestrator_node)
 
-GRAPH.set_entry_point(Agent.ROUTER)
+GRAPH.set_entry_point(Agent.GUARDRAIL_IN)
+GRAPH.add_node("join", lambda _: {})
 
 GRAPH.add_node(Agent.FINANCIAL, AGENTS[Agent.FINANCIAL])
 GRAPH.add_node(Agent.SCHEDULE,  AGENTS[Agent.SCHEDULE])
@@ -55,24 +92,16 @@ GRAPH.add_node(Agent.FAQ,       AGENTS[Agent.FAQ])
 
 GRAPH.add_conditional_edges(
     Agent.ROUTER,
-    decide_flow,
-    {
-        Flow.SPECIALIST: PLANNER,
-        Flow.REFER: PLANNER,
-        Flow.DIRECT: END,
-    },
-)
-
-GRAPH.add_conditional_edges(
-    PLANNER,
     dispatch
 )
 
-GRAPH.add_edge(Agent.FINANCIAL, Agent.ORCHESTRATOR)
-GRAPH.add_edge(Agent.SCHEDULE,  Agent.ORCHESTRATOR)
-GRAPH.add_edge(Agent.NOTES,     Agent.ORCHESTRATOR)
-GRAPH.add_edge(Agent.FAQ, Agent.ORCHESTRATOR) # FAQ também retorna ao orquestrador
+GRAPH.add_edge(Agent.FINANCIAL, "join")
+GRAPH.add_edge(Agent.SCHEDULE,  "join")
+GRAPH.add_edge(Agent.NOTES,     "join")
+GRAPH.add_edge(Agent.FAQ, "join") # FAQ também retorna ao orquestrador
 
+GRAPH.add_edge("join", Agent.ORCHESTRATOR)
+GRAPH.add_edge(Agent.GUARDRAIL_OUT, END)
 GRAPH.add_edge(Agent.ORCHESTRATOR, END)
 
 

@@ -9,8 +9,10 @@ from app.prompt.agents.specialist.notes     import CAPABILITY as NOTES_CAPABILIT
 _OBJECTIVE = """
 ### OBJETIVO
 Analisar a solicitação do usuário e decidir entre:
-1. responder diretamente; ou
-2. encaminhar para o especialista mais adequado.
+
+1. responder diretamente;
+2. encaminhar para um fluxo de especialistas (SPECIALIST);
+3. encaminhar para um fluxo de consulta e referência (REFER).
 """
 
 
@@ -24,45 +26,50 @@ e interações gerais de entrada.
 _RULES = """
 ### REGRAS
 
-#### Roteamento
-- Classifique toda solicitação em um dos dois destinos: DIRECT ou SPECIALIST.
-- Encaminhe para um especialista quando a solicitação exigir ação concreta ou consulta de dados.
-- Responda diretamente quando for saudação, small talk ou assunto fora do escopo dos especialistas.
-- Responda diretamente solicitando esclarecimento quando a solicitação for ambígua.
+#### Classificação de fluxo
+- Classifique toda solicitação em um dos fluxos: DIRECT, SPECIALIST ou REFER.
+- Utilize SPECIALIST quando a solicitação exigir execução de ações, registros, alterações ou operações.
+- Utilize REFER quando a solicitação exigir apenas consulta de informações, regras, políticas ou documentação.
+- Utilize DIRECT para saudações, small talk, assuntos fora do escopo ou solicitações ambíguas.
 - Nunca encaminhe solicitações ambíguas.
+
+#### Seleção de intenções
+- Além do fluxo, identifique todas as intenções relevantes para a solicitação.
+- Uma mesma solicitação pode conter múltiplas intenções.
+- Se uma intenção estiver presente, marque-a como true.
+- Se uma intenção não estiver presente, marque-a como false.
+- Nunca invente intenções não explicitamente solicitadas.
 
 #### Intenções e desejos
 - Quando o usuário expressar um desejo, plano futuro ou intenção de compra sem solicitar
   uma ação concreta, responda diretamente.
-- Nesses casos, ofereça apenas o que os agentes disponíveis conseguem fazer:
-  registrar uma anotação ou verificar o saldo disponível.
-- Nunca sugira capacidades inexistentes como metas, planos de economia ou objetivos financeiros.
+- Nesses casos, ofereça apenas capacidades existentes no sistema.
+- Nunca sugira funcionalidades inexistentes.
 - Não forneça informações gerais sobre produtos, marcas ou especificações.
 
 #### FAQ
 - Perguntas sobre regras, políticas, termos, privacidade, segurança ou funcionamento do sistema
-  devem sempre ser encaminhadas para o agente faq.
+  pertencem ao fluxo REFER.
 
 #### Formato
-- Ao encaminhar, preserve integralmente a PERGUNTA_ORIGINAL — nunca reescreva ou resuma.
-- Inclua campos opcionais apenas quando agregarem valor real ao especialista.
 - Nunca misture formatos de saída.
+- Sempre respeite exatamente o formato especificado.
 """
 
 
-def _ROUTES() -> str: return f"""
-### ROTAS DISPONÍVEIS
+def _INTENTS() -> str: return f"""
+### INTENÇÕES DISPONÍVEIS
 
-#### FINANCEIRO (route: financial)
+#### FINANCIAL
 {FINANCIAL_CAPABILITY}
 
-#### AGENDA (route: schedule)
+#### SCHEDULE
 {SCHEDULE_CAPABILITY}
 
-#### FAQ (route: faq)
+#### FAQ
 {FAQ_CAPABILITY}
 
-#### ANOTAÇÕES (route: notes)
+#### NOTES
 {NOTES_CAPABILITY}
 """
 
@@ -71,18 +78,23 @@ _OUTPUT = """
 ### FORMATO DE SAÍDA
 
 #### Quando responder diretamente
-TARGET=DIRECT
-ANSWER=[resposta em linguagem natural]
 
-#### Quando encaminhar para especialista
-TARGET=SPECIALIST
-ROUTE=[financial|schedule|faq|notes]
-PERGUNTA_ORIGINAL=[mensagem completa do usuário, sem qualquer alteração]
+flow = DIRECT
 
-Campos opcionais (incluir apenas se úteis ao especialista):
-CONTEXTO=[contexto adicional relevante]
-INTENCAO=[objetivo principal do usuário]
-INSTRUCAO=[orientação adicional para o especialista]
+answer = resposta em linguagem natural
+
+#### Quando encaminhar
+
+flow = SPECIALIST ou REFER
+
+intent = {
+    financial: true|false,
+    schedule: true|false,
+    notes: true|false,
+    faq: true|false
+}
+
+answer = null
 """
 
 
@@ -91,91 +103,46 @@ _FEW_SHOT_EXAMPLES = [
 #### Saudação
 Usuário: Olá
 
-TARGET=DIRECT
-ANSWER=Olá! Como posso te ajudar hoje?
+flow = SPECIALIST
+intent = {
+    financial: true,
+    schedule: false,
+    notes: false,
+    faq: false
+}
+answer = null
 """,
 
 """
-#### Small talk
-Usuário: Como você está?
+#### Registro financeiro e agendamento
 
-TARGET=DIRECT
-ANSWER=Estou bem, obrigado! Em que posso te ajudar?
+Usuário:
+Registre uma despesa de 200 reais e marque uma reunião amanhã às 15h.
+
+flow = SPECIALIST
+intent = {
+    financial: true,
+    schedule: true,
+    notes: false,
+    faq: false
+}
+answer = null
 """,
 
 """
-#### Solicitação ambígua
-Usuário: Preciso registrar algo
+#### Política de privacidade
 
-TARGET=DIRECT
-ANSWER=Claro! Você quer registrar uma transação financeira ou uma anotação?
-""",
+Usuário:
+Como funciona a política de privacidade?
 
-"""
-#### Desejo ou intenção de compra
-Usuário: Quero comprar um PlayStation
-
-TARGET=DIRECT
-ANSWER=Legal! Posso te ajudar a não esquecer disso. Quer que eu registre como uma anotação?
-""",
-
-"""
-#### Consulta financeira
-Usuário: Quanto gastei este mês com alimentação?
-
-TARGET=SPECIALIST
-ROUTE=financial
-PERGUNTA_ORIGINAL=Quanto gastei este mês com alimentação?
-INTENCAO=Consultar gastos por categoria no mês atual
-""",
-
-"""
-#### Registro de transação
-Usuário: Adicione 100 reais na minha conta
-
-TARGET=SPECIALIST
-ROUTE=financial
-PERGUNTA_ORIGINAL=Adicione 100 reais na minha conta
-INTENCAO=Registrar transação financeira
-""",
-
-"""
-#### Criação de evento na agenda
-Usuário: Marque uma reunião amanhã às 14h
-
-TARGET=SPECIALIST
-ROUTE=schedule
-PERGUNTA_ORIGINAL=Marque uma reunião amanhã às 14h
-INTENCAO=Criar compromisso na agenda
-""",
-
-"""
-#### Consulta sobre política do sistema
-Usuário: Como funciona a política de privacidade?
-
-TARGET=SPECIALIST
-ROUTE=faq
-PERGUNTA_ORIGINAL=Como funciona a política de privacidade?
-INTENCAO=Consultar política de privacidade
-""",
-
-"""
-#### Registro de anotação
-Usuário: Anote que preciso revisar o relatório amanhã
-
-TARGET=SPECIALIST
-ROUTE=notes
-PERGUNTA_ORIGINAL=Anote que preciso revisar o relatório amanhã
-INTENCAO=Registrar nova anotação
-""",
-
-"""
-#### Fora do escopo dos especialistas
-Usuário: Me explica como funciona a bolsa de valores
-
-TARGET=DIRECT
-ANSWER=Não tenho essa capacidade, mas posso te ajudar a registrar transações,
-consultar seu saldo ou anotar algo que queira lembrar.
+flow = REFER
+intent = {
+    financial: false,
+    schedule: false,
+    notes: false,
+    faq: true
+}
+answer = null
 """,
 ]
 
@@ -187,7 +154,7 @@ def ROUTER_PROMPT() -> str: return f"""
 {_OBJECTIVE}\n\n
 {_SCOPE}\n\n
 {_RULES}\n\n
-{_ROUTES()}\n\n
+{_INTENTS()}\n\n
 {_OUTPUT}\n\n
 {_FEW_SHOTS}\n\n
 """
