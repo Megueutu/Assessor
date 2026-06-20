@@ -1,53 +1,18 @@
-import operator
-from typing import Annotated
-
-from langgraph.graph import StateGraph, MessagesState, END
+from langgraph.graph import StateGraph, END
 from langgraph.types import Send
 from langgraph.checkpoint.memory import MemorySaver
 
 from app.core.constants.agents import Agent
-from app.core.constants.flow import Flow 
-from app.agents.agents import AGENTS, DEFS
+from app.core.constants.flow import Flow
+from app.agents.agents import AGENTS
 
-
-class GraphState(MessagesState):
-    called: Annotated[list[str], operator.add]
-    intent: Annotated[dict[str, bool], operator.or_]
-    specialist_outputs: Annotated[list[str], operator.add]
-    flow: str
-    map_pii: dict
-
-
-def router_node(state: GraphState) -> dict:
-    decision = DEFS["router"](state["messages"])
-
-    if decision.flow == Flow.DIRECT:
-        if not decision.answer:
-            raise ValueError("Router retornou DIRECT sem answer.")
-
-        return {
-            "flow": Flow.DIRECT.value,
-            "messages": [
-                {
-                    "role": "assistant",
-                    "content": decision.answer
-                }
-            ]
-        }
-
-    return {
-        "flow": decision.flow,
-        "intent": decision.intent
-    }
-
-
-def orchestrator_node(state: GraphState) -> dict:
-    output = AGENTS[Agent.ORCHESTRATOR].invoke({"messages": state["messages"]})
-    
-    return {
-        "messages": [{"role": "assistant", "content": output["messages"][-1].text}],
-        "called": [Agent.ORCHESTRATOR],
-    }
+from app.workflow.state import GraphState
+from app.workflow.nodes import (
+    router_node,
+    orchestrator_node,
+    guardrail_in_node,
+    guardrail_out_node,
+)
 
 
 def dispatch(state: GraphState):
@@ -66,6 +31,10 @@ def dispatch(state: GraphState):
     return sends
 
 
+def guardrail_dispatch(state: GraphState):
+    return END if state["flow"] == Flow.DIRECT.value else Agent.ROUTER
+
+
 GRAPH = StateGraph(GraphState)
 
 GRAPH.add_node(Agent.GUARDRAIL_IN, guardrail_in_node)
@@ -74,8 +43,8 @@ GRAPH.add_conditional_edges(
     Agent.GUARDRAIL_IN,
     guardrail_dispatch,
     {
-        Agent.ROUTER,
-        END
+        Agent.ROUTER: Agent.ROUTER,
+        END: END,
     }
 )
 
@@ -98,11 +67,11 @@ GRAPH.add_conditional_edges(
 GRAPH.add_edge(Agent.FINANCIAL, "join")
 GRAPH.add_edge(Agent.SCHEDULE,  "join")
 GRAPH.add_edge(Agent.NOTES,     "join")
-GRAPH.add_edge(Agent.FAQ, "join") # FAQ também retorna ao orquestrador
+GRAPH.add_edge(Agent.FAQ, "join")
 
 GRAPH.add_edge("join", Agent.ORCHESTRATOR)
+GRAPH.add_edge(Agent.ORCHESTRATOR, Agent.GUARDRAIL_OUT)
 GRAPH.add_edge(Agent.GUARDRAIL_OUT, END)
-GRAPH.add_edge(Agent.ORCHESTRATOR, END)
 
 
 MEMORY = MemorySaver()

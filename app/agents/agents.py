@@ -7,12 +7,12 @@ from app.agents.tools.registry import NOTES_TOOLS
 from app.agents.tools.registry import FINANCIAL_TOOLS
 from app.agents.tools.registry import FAQ_TOOLS
 
-from app.agents.prompt.agents.orchestrator import ORCHESTRATOR_PROMPT
-from app.agents.prompt.agents.specialist.notes import NOTES_PROMPT
-from app.agents.prompt.agents.specialist.schedule import SCHEDULE_PROMPT
-from app.agents.prompt.agents.specialist.financial import FINANCIAL_PROMPT
-from app.agents.prompt.agents.specialist.faq import FAQ_PROMPT
-from app.agents.prompt.agents.router import ROUTER_PROMPT
+from app.agents.prompt.coordinator.orchestrator import ORCHESTRATOR_PROMPT
+from app.agents.prompt.specialist.notes import NOTES_PROMPT
+from app.agents.prompt.specialist.schedule import SCHEDULE_PROMPT
+from app.agents.prompt.specialist.financial import FINANCIAL_PROMPT
+from app.agents.prompt.specialist.faq import FAQ_PROMPT
+from app.agents.prompt.coordinator.router import ROUTER_PROMPT
 
 from app.agents.contracts.router_decision import RouterDecision
 

@@ -6,7 +6,6 @@ from contextlib import contextmanager
 def _get_conn():
     return connect(config.PSQL_DATABASE_URL)
 
-
 @contextmanager
 def get_cursor():
     conn = _get_conn()

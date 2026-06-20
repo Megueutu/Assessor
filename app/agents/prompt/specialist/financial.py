@@ -1,4 +1,4 @@
-from ...system import SHARED_SPECIALIST_PROMPT
+from ..system import SHARED_SPECIALIST_PROMPT
 
 
 _OBJECTIVE = """

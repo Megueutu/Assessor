@@ -10,14 +10,12 @@ EMBEDDING_MODEL = GoogleGenerativeAIEmbeddings(
     google_api_key=config.GEMINI_API_KEY,
 )
 
-
-LLM_GEMINI = ChatGoogleGenerativeAI(
+_LLM_GEMINI = ChatGoogleGenerativeAI(
     model='gemini-2.5-flash',
     temperature=0.3,
     top_p=0.95,
     google_api_key=config.GEMINI_API_KEY
 )
-
 
 LLM_GROQ = ChatGroq(
     model='llama-3.3-70b-versatile',
@@ -25,8 +23,7 @@ LLM_GROQ = ChatGroq(
     groq_api_key=config.GROQ_API_KEY
 )
 
-
-SPECIALIST_LLM = LLM_GEMINI.with_fallbacks([LLM_GROQ])
+SPECIALIST_LLM = _LLM_GEMINI.with_fallbacks([LLM_GROQ])
 
 FAST_LLM = ChatGroq(
     model='llama-3.3-70b-versatile',
