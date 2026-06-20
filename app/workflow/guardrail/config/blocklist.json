@@ -1,0 +1,30 @@
+{
+  "keywords_dados_internos": [
+    "prompt do sistema", "system prompt", "suas instruções", "your instructions",
+    "variável de ambiente", "chave de api", "api key", "senha do sistema",
+    "token de acesso", "banco de dados interno", "tabela interna",
+    "dados de outros clientes", "lista de clientes", "credenciais"
+  ],
+  "respostas_bloqueio": {
+    "OFENSIVO": {
+      "motivo": "conteudo_ofensivo",
+      "mensagem": "Por favor, mantenha um tom respeitoso para que eu possa te ajudar."
+    },
+    "PERIGOSO": {
+      "motivo": "pedido_perigoso",
+      "mensagem": "Não posso ajudar com esse tipo de solicitação."
+    },
+    "ILICITO": {
+      "motivo": "pedido_ilicito",
+      "mensagem": "Não posso auxiliar com atividades ilegais ou irregulares."
+    },
+    "POLITICO": {
+      "motivo": "pergunta_politica",
+      "mensagem": "Não me envolvo em temas políticos. Posso ajudar com finanças ou sua agenda."
+    },
+    "INDICACAO_INVEST": {
+      "motivo": "indicacao_investimento",
+      "mensagem": "Por regulação, não forneço indicações diretas de ativos. Posso explicar classes de investimento ou agendar uma reunião com seu assessor."
+    }
+  }
+}

@@ -1,6 +1,5 @@
 from app.workflow.flow import assessor_flow
 
-
 BREAKWAYS = ("exit", "quit", "close", "encerrar", "sair")
 
 def main():

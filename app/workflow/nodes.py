@@ -3,7 +3,7 @@ from langchain_core.messages import RemoveMessage
 from app.core.constants.agents import Agent
 from app.core.constants.flow import Flow
 from app.agents.agents import AGENTS, DEFS
-from app.guardrail import guardrail_entrada, guardrail_saida, anonimizar_entrada
+from app.workflow.guardrail.guardrail import guardrail_entrada, guardrail_saida, anonimizar_entrada
 from app.workflow.state import GraphState
 
 
