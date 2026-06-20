@@ -11,3 +11,5 @@ pypdf
 psycopg2-binary
 pydantic
 tzdata
+pymongo
+pydantic

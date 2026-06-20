@@ -1,14 +1,13 @@
 import json
 from pathlib import Path
 
-
 PII = [
-    ("CPF",      r"\d{3}\.?\d{3}\.?\d{3}-?\d{2}"),
-    ("CNPJ",     r"\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2}"),
+    ("CPF", r"\d{3}\.?\d{3}\.?\d{3}-?\d{2}"),
+    ("CNPJ", r"\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2}"),
     ("TELEFONE", r"\(?\d{2}\)?\s?\d{4,5}-?\d{4}"),
-    ("EMAIL",    r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"),
-    ("CONTA",    r"\d{4,6}-\d{1}"),
-    ("CARTAO",   r"\d{4}\s?\d{4}\s?\d{4}\s?\d{4}"),
+    ("EMAIL", r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"),
+    ("CONTA", r"\d{4,6}-\d{1}"),
+    ("CARTAO", r"\d{4}\s?\d{4}\s?\d{4}\s?\d{4}"),
 ]
 
 
@@ -34,9 +33,8 @@ INJECTION_PATTERNS = [
 _BLOCKLIST_PATH = Path(__file__).parent / "config" / "blocklist.json"
 _blocklist = json.loads(_BLOCKLIST_PATH.read_text(encoding="utf-8"))
 
-KEYWORDS_DADOS_INTERNOS = _blocklist["keywords_dados_internos"]
-
-RESPOSTAS_BLOQUEIO = {
+KEYWORDS_INTERNAL_DATA = _blocklist["keywords_dados_internos"]
+ANSWERS_FOR_BLOCK = {
     categoria: (dados["motivo"], dados["mensagem"])
     for categoria, dados in _blocklist["respostas_bloqueio"].items()
 }
