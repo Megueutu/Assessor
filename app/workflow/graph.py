@@ -7,7 +7,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from app.core.constants.agents import Agent
 from app.core.constants.flow import Flow 
-from app.agents.registry import AGENTS, DEFS
+from app.agents.agents import AGENTS, DEFS
 
 
 class GraphState(MessagesState):

@@ -1,9 +1,9 @@
 from ..system import SHARED_PROMPT
 
-from app.prompt.agents.specialist.financial import CAPABILITY as FINANCIAL_CAPABILITY
-from app.prompt.agents.specialist.schedule  import CAPABILITY as SCHEDULE_CAPABILITY
-from app.prompt.agents.specialist.faq       import CAPABILITY as FAQ_CAPABILITY
-from app.prompt.agents.specialist.notes     import CAPABILITY as NOTES_CAPABILITY
+from app.agents.prompt.agents.specialist.financial import CAPABILITY as FINANCIAL_CAPABILITY
+from app.agents.prompt.agents.specialist.schedule  import CAPABILITY as SCHEDULE_CAPABILITY
+from app.agents.prompt.agents.specialist.faq       import CAPABILITY as FAQ_CAPABILITY
+from app.agents.prompt.agents.specialist.notes     import CAPABILITY as NOTES_CAPABILITY
 
 
 _OBJECTIVE = """

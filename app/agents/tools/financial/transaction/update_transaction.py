@@ -2,9 +2,9 @@ from langchain.tools import tool
 from typing import Optional
 
 from app.core.database  import get_cursor
-from app.tools.response import ToolResponse
-from app.tools.financial.args import UpdateTransactionArgs
-from app.tools.financial.helpers import local_date_filter_sql, resolve_type_id, get_category_id
+from app.agents.tools.response import ToolResponse
+from app.agents.tools.financial.args import UpdateTransactionArgs
+from app.agents.tools.financial.helpers import local_date_filter_sql, resolve_type_id, get_category_id
 
 
 _SQL_FIND_BY_TEXT_AND_DATE = f"""

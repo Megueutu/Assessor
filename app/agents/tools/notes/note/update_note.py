@@ -1,8 +1,8 @@
 from langchain.tools import tool
 from typing import Optional
 
-from app.tools.response import ToolResponse
-from app.tools.notes.args import UpdateNoteArgs
+from app.agents.tools.response import ToolResponse
+from app.agents.tools.notes.args import UpdateNoteArgs
 from app.core.database import get_cursor
 
 _SQL_UPDATE_HEAD = """

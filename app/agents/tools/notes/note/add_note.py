@@ -1,8 +1,8 @@
 from langchain.tools import tool
 from typing import Optional
 
-from app.tools.response import ToolResponse
-from app.tools.notes.args import AddNoteArgs
+from app.agents.tools.response import ToolResponse
+from app.agents.tools.notes.args import AddNoteArgs
 from app.core.database import get_cursor
 from app.core.llms import FAST_LLM
 
