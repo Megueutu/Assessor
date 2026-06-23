@@ -3,7 +3,7 @@ import re
 from app.workflow.guardrail.constants import PII
 
 
-def anonymize_input(content):
+def anonymize_input(content: str):
     mapping = {}
 
     for pii_type, pattern in PII:

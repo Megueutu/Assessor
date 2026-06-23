@@ -13,6 +13,7 @@ from app.agents.prompt.specialist.schedule import SCHEDULE_PROMPT
 from app.agents.prompt.specialist.financial import FINANCIAL_PROMPT
 from app.agents.prompt.specialist.faq import FAQ_PROMPT
 from app.agents.prompt.coordinator.router import ROUTER_PROMPT
+from app.agents.prompt.utils.summary import SUMMARY_PROMPT
 
 from app.agents.contracts.router_decision import RouterDecision
 
@@ -45,6 +46,11 @@ FAQ_AGENT = create_agent(
     tools=FAQ_TOOLS,
 )
 
+SUMMARY_AGENT = create_agent(
+    model=FAST_LLM,
+    system_prompt=SUMMARY_PROMPT()
+)
+
 ROUTER_MODEL = FAST_LLM.with_structured_output(RouterDecision)
 
 def ROUTER_DECISION(messages) -> dict:
@@ -53,14 +59,22 @@ def ROUTER_DECISION(messages) -> dict:
         *messages
 ])
 
+
+def SUMMARY_CHAT(messages: list[dict]) -> str:
+    convo = "\n".join(f"{m['role']}: {m['content']}" for m in messages)
+    return SUMMARY_AGENT.invoke({"conversa": convo}).content.strip()
+
 AGENTS = {
     "financial": FINANCIAL_AGENT,
     "schedule":  SCHEDULE_AGENT,
     "faq":       FAQ_AGENT,
     "notes":     NOTES_AGENT,
     "orchestrator": ORCHESTRATOR_AGENT,
+    "summary": SUMMARY_AGENT
 }
+
 
 DEFS = {
     "router": ROUTER_DECISION,
+    "summary": SUMMARY_CHAT
 }

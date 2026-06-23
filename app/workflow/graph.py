@@ -4,7 +4,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from app.core.constants.agents import Agent
 from app.core.constants.flow import Flow
-from app.agents.agents import AGENTS
+from app.agents.registry import AGENTS
 
 from app.workflow.state import GraphState
 from app.workflow.nodes import (

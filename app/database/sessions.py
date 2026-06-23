@@ -1,100 +1,11 @@
-"""
-=================
-Modelagem
----------
-Um documento por acesso (sessão = uma conversa completa).
-O _id é um UUID gerado internamente — a main.py só conhece o session_id.
-O session_id identifica o usuário.
-
-Documento
----------
-{
-  "_id":           "uuid-gerado-internamente",
-  "session_id":    "id_usuario",
-  "iniciada_em":   datetime,
-  "atualizada_em": datetime,
-  "resumo":        "Usuário registrou Pix de R$50...",
-  "mensagens":     [
-    {"role": "usuario",     "content": "oi"},
-    {"role": "assistente", "content": "Olá!"}
-  ]
-}
-
-Funções
-----------------
-  iniciar_sessao(session_id)                 → cria documento no MongoDB
-  salvar_mensagem(session_id, role, content) → adiciona mensagem na sessão ativa
-  encerrar_sessao(session_id)                → gera resumo e salva no documento
-"""
-
-import os
 import uuid
 from datetime import datetime, timezone
 
-from dotenv import load_dotenv
-from langchain_groq import ChatGroq
-from pymongo import MongoClient
+from app.agents.registry import SUMMARY_AGENT
 
-load_dotenv()
-
-
-# ==============================================================================
-# CONEXÃO
-# ==============================================================================
-
-_mongo      = MongoClient(os.getenv("MONGODB_URI", "mongodb://localhost:27017"))
-db          = _mongo["assessor"]
-col_sessoes = db["sessoes"]
-
-col_sessoes.create_index("session_id")
-col_sessoes.create_index("iniciada_em")
-
-# ==============================================================================
-# LLM PARA RESUMO
-# ==============================================================================
-_llm_resumo = ChatGroq(
-    model="llama-3.3-70b-versatile",
-    temperature=0.0,
-    api_key=os.getenv("GROQ_API_KEY"),
-)
-
-_PROMPT_RESUMO = """\
-Você é um assistente que resume conversas de assessoria financeira e agenda.
-Gere um resumo conciso em 2-4 frases capturando:
-- O que o usuário fez (transações registradas, eventos agendados)
-- O que o usuário perguntou
-- Informações relevantes mencionadas (valores, datas, categorias)
-
-Responda APENAS com o resumo, sem introdução ou explicação.
-
-Conversa:
-{conversa}
-"""
 _sessoes_ativas: dict = {}
 
-def _agora() -> datetime:
-    return datetime.now(timezone.utc)
-
-def _formatar_conversa(mensagens: list[dict]) -> str:
-    """Formata o array de mensagens em texto para o prompt de resumo."""
-    linhas = []
-    for msg in mensagens:
-        linhas.append(f"{msg['role']}: {msg['content']}")
-    return "\n".join(linhas)
-
-
-def _gerar_resumo(mensagens: list[dict]) -> str:
-    """Chama o LLM para gerar o resumo da sessão."""
-    conversa = _formatar_conversa(mensagens)
-    return _llm_resumo.invoke(
-        _PROMPT_RESUMO.format(conversa=conversa)
-    ).content.strip()
-
-
-# ==============================================================================
-# FUNÇÕES
-# ==============================================================================
-def iniciar_sessao(session_id: str) -> None: # se o session_id for int tem que mudar aqui
+def iniciar_sessao(session_id: str) -> None:
     """
     Cria um novo documento de sessão no MongoDB.
     O doc_id (UUID) é gerado aqui e guardado em _sessoes_ativas.

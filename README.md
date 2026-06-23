@@ -1,6 +1,5 @@
 # Meu objetivo final
 
-
 # Implementar
 
 [ ] Guardrail de entrada e saída
@@ -14,6 +13,8 @@
 [ ] MCP Integra ferramentas externas com segurança
 [ ] A2A
 [ ] Controle de tokens (todos os agentes)
+
+[ ] Aplicar Pydocs em todas as funções, classes e etc
 
 ## A corrigir
 
