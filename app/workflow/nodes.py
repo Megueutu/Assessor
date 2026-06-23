@@ -2,13 +2,13 @@ from langchain_core.messages import RemoveMessage
 
 from app.core.constants.agents import Agent
 from app.core.constants.flow import Flow
-from app.agents.registry import AGENTS, DEFS
+from app.agents.registry import AGENTS, ROUTER_DECISION
 from app.workflow.guardrail.guardrail import guardrail_entrada, guardrail_saida, anonimizar_entrada
 from app.workflow.state import GraphState
 
 
 def router_node(state: GraphState) -> dict:
-    decision = DEFS["router"](state["messages"])
+    decision = ROUTER_DECISION(state["messages"])
 
     if decision.flow == Flow.DIRECT:
         if not decision.answer:
@@ -40,8 +40,6 @@ def orchestrator_node(state: GraphState) -> dict:
 
 
 def guardrail_in_node(state: GraphState) -> dict:
-    # list() materializa a lista real (HumanMessage com .text/.id) —
-    # state["messages"][-1] sozinho expõe um TextAccessor sem .id
     human_message = list(state["messages"])[-1]
 
     texto_anonimizado, mapa = anonimizar_entrada(human_message.text)

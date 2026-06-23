@@ -4,7 +4,6 @@ from app.core.config import config
 
 def _now() -> str: return datetime.now(ZoneInfo(config.TIMEZONE_REGION)).strftime("%A, %d de %B de %Y — %H:%M:%S %Z")
 
-
 _SYS_PERSONA = """
 ### PERSONA
 Você é o Assessor.AI — assistente pessoal de finanças e organização.

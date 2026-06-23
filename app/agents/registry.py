@@ -53,6 +53,7 @@ SUMMARY_AGENT = create_agent(
 
 ROUTER_MODEL = FAST_LLM.with_structured_output(RouterDecision)
 
+
 def ROUTER_DECISION(messages) -> dict:
     return ROUTER_MODEL.invoke([
         SystemMessage(content=ROUTER_PROMPT()),
@@ -63,6 +64,7 @@ def ROUTER_DECISION(messages) -> dict:
 def SUMMARY_CHAT(messages: list[dict]) -> str:
     convo = "\n".join(f"{m['role']}: {m['content']}" for m in messages)
     return SUMMARY_AGENT.invoke({"conversa": convo}).content.strip()
+
 
 AGENTS = {
     "financial": FINANCIAL_AGENT,
