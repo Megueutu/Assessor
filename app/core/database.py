@@ -22,7 +22,7 @@ def get_cursor():
         conn.close()
 
 
-class MongoDatabase:
+class _MongoDatabase:
     def __init__(self):
         self.client = MongoClient(config.MONGODB_URI)
         self.db = self.client.get_database()
@@ -31,4 +31,4 @@ class MongoDatabase:
         return self.db[name]
 
 
-mongo_conn = MongoDatabase()
+mongo_conn = _MongoDatabase()

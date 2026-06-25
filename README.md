@@ -21,3 +21,7 @@
 [ ] Corrigir Registry dos agentes e suas declarações, melhorar escopo da definição de cada função de cada agente
 [ ] Implementar o agenda
 [ ] Reformular banco de dados para implementar relacionamento com Notas -> Agenda e Financeiro
+
+## OBS
+
+Utilizar o Gemini para base frontend
