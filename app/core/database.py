@@ -11,12 +11,15 @@ def _get_conn():
 def get_cursor():
     conn = _get_conn()
     cur = conn.cursor()
+    
     try:
         yield conn, cur
         conn.commit()
+    
     except Exception:
         conn.rollback()
         raise
+    
     finally:
         cur.close()
         conn.close()
@@ -29,6 +32,5 @@ class _MongoDatabase:
 
     def get_collection(self, name: str):
         return self.db[name]
-
 
 mongo_conn = _MongoDatabase()

@@ -2,13 +2,10 @@ from uuid import uuid8
 from datetime import datetime, timezone
 
 from app.agents.registry import SUMMARY_CHAT
-from app.core.config import config
-from app.core.database import mongo_conn
+from app.database.collections import Collections
 
-
-_coll = mongo_conn.get_collection("sessions")
+_coll = Collections.SESSIONS
 _active_sessions = {}
-
 
 def _now() -> datetime: return datetime.now(timezone.utc)
 
