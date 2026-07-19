@@ -55,5 +55,5 @@ def add_transaction(
             occurred_at=occurred_at.isoformat()
         )
 
-    except Exception as e:
-        return ToolResponse.error(message=str(e))
+    except Exception:
+        return ToolResponse.error(message="Não foi possível registrar a transação.")

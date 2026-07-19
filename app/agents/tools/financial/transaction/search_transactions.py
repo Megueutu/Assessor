@@ -8,7 +8,8 @@ from app.agents.tools.financial.helpers import resolve_category_id, resolve_type
 
 
 _SQL_BASE = """
-    SELECT t.amount, tt.type, c.name, t.description, t.occurred_at
+    SELECT t.id, t.amount, tt.type, c.name, t.description,
+           t.payment_method, t.occurred_at, t.source_text
     FROM transactions t
     JOIN transaction_types tt ON t.type = tt.id
     LEFT JOIN categories c ON t.category_id = c.id
@@ -17,8 +18,8 @@ _SQL_BASE = """
 _SQL_FILTER_TYPE     = " AND t.type = %(id_tipo)s"
 _SQL_FILTER_CATEGORY = " AND t.category_id = %(id_cat)s"
 _SQL_FILTER_TEXT     = " AND (t.source_text ILIKE %(texto)s OR t.description ILIKE %(texto)s)"
-_SQL_FILTER_FROM     = " AND (t.occurred_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') >= %(inicio)s"
-_SQL_FILTER_TO       = " AND (t.occurred_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Sao_Paulo') <= %(fim)s::date + interval '1 day' - interval '1 second'"
+_SQL_FILTER_FROM     = " AND (t.occurred_at AT TIME ZONE 'America/Sao_Paulo') >= %(inicio)s::date"
+_SQL_FILTER_TO       = " AND (t.occurred_at AT TIME ZONE 'America/Sao_Paulo') < %(fim)s::date + interval '1 day'"
 _SQL_ORDER           = " ORDER BY t.occurred_at DESC LIMIT 20"
 
 
@@ -67,15 +68,18 @@ def search_transactions(
         return ToolResponse.ok(
             resultados=[
                 {
-                    "value":       float(row[0]),
-                    "type":        row[1],
-                    "category":    row[2],
-                    "description": row[3],
-                    "date":        row[4].isoformat(),
+                    "transaction_id": row[0],
+                    "value":          float(row[1]),
+                    "type":           row[2],
+                    "category":       row[3],
+                    "description":    row[4],
+                    "payment_method": row[5],
+                    "date":           row[6].isoformat(),
+                    "source_text":    row[7],
                 }
                 for row in rows
             ]
         )
 
-    except Exception as e:
-        return ToolResponse.error(message=str(e))
+    except Exception:
+        return ToolResponse.error(message="Não foi possível consultar as transações.")

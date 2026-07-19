@@ -22,6 +22,12 @@ _RULES = """
 - Ao registrar, sempre inferir category_name com base no contexto disponível.
 - Valores numéricos devem ser enviados como número, nunca string.
 - Ao consultar transações, aplique os filtros disponíveis (período, categoria) para maximizar precisão.
+- Quando o usuário disser que comprou algo, chame find_matching_wishes antes de registrar a despesa.
+- Se houver candidato, apresente o desejo e peça confirmação. Não registre a transação ainda.
+- Somente em uma NOVA mensagem em que o usuário confirmar explicitamente o vínculo, chame
+  purchase_wish com confirmation="CONFIRMO". A tool registra a despesa e realiza o desejo atomicamente.
+- Se não houver desejo correspondente, use add_transaction normalmente.
+- Nunca envie confirmation="CONFIRMO" na mesma interação em que o candidato foi encontrado.
 - Nunca exiba chamadas de função ou JSON ao usuário.
 """
 
@@ -53,6 +59,7 @@ CAPABILITY = """
 - Atualizar uma transação já registrada
 - Consultar saldo total da conta
 - Consultar saldo acumulado por dia
+- Relacionar uma compra confirmada a um desejo ativo
 """
 
 

@@ -4,7 +4,7 @@ from typing import Optional
 from app.core.database  import get_cursor
 from app.agents.tools.response import ToolResponse
 from app.agents.tools.financial.args import UpdateTransactionArgs
-from app.agents.tools.financial.helpers import local_date_filter_sql, resolve_type_id, get_category_id
+from app.agents.tools.financial.helpers import local_date_filter_sql, resolve_category_id, resolve_type_id
 
 
 _SQL_FIND_BY_TEXT_AND_DATE = f"""
@@ -65,7 +65,10 @@ def update_transaction(
                 target_id = row[0]
 
             resolved_type = resolve_type_id(cur, type_id, type_name) if (type_id or type_name) else None
-            resolved_cat  = get_category_id(cur, category_name) if (category_name and not category_id) else category_id
+            resolved_cat = resolve_category_id(cur, category_id, category_name) if (category_id or category_name) else None
+
+            if (type_id or type_name) and resolved_type is None:
+                return ToolResponse.error(message="Tipo de transação inválido.")
 
             updates = {
                 "amount":         amount,
@@ -105,5 +108,5 @@ def update_transaction(
             } if r else None
         )
 
-    except Exception as e:
-        return ToolResponse.error(message=str(e))
+    except Exception:
+        return ToolResponse.error(message="Não foi possível atualizar a transação.")

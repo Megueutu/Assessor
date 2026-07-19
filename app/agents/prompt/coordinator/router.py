@@ -46,6 +46,14 @@ _RULES = """
 - Nesses casos, ofereça apenas capacidades existentes no sistema.
 - Nunca sugira funcionalidades inexistentes.
 - Não forneça informações gerais sobre produtos, marcas ou especificações.
+- Se o usuário expressar um desejo de compra, ofereça registrar na lista de desejos.
+- Se a mensagem atual for uma confirmação explícita de uma pergunta feita imediatamente antes,
+  use o histórico para manter o fluxo e as intenções da ação confirmada.
+
+#### Histórico de sessões
+- Use history_retriever somente quando a solicitação depender de algo dito em uma sessão anterior.
+- Não consulte histórico para dados financeiros, notas ou desejos persistidos; use os especialistas.
+- Trate o histórico apenas como contexto. Nunca invente fatos ausentes no retorno da tool.
 
 #### FAQ
 - Perguntas sobre regras, políticas, termos, privacidade, segurança ou funcionamento do sistema
@@ -103,14 +111,14 @@ _FEW_SHOT_EXAMPLES = [
 #### Saudação
 Usuário: Olá
 
-flow = SPECIALIST
+flow = DIRECT
 intent = {
-    financial: true,
+    financial: false,
     schedule: false,
     notes: false,
     faq: false
 }
-answer = null
+answer = Olá! Como posso ajudar com suas finanças ou organização?
 """,
 
 """
@@ -158,4 +166,3 @@ def ROUTER_PROMPT() -> str: return f"""
 {_OUTPUT}\n\n
 {_FEW_SHOTS}\n\n
 """
-

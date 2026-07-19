@@ -1,92 +1,96 @@
-from langchain.tools import tool
 from typing import Optional
 
+from langchain.tools import tool
+
+from app.agents.tools.notes.args import ListNotesArgs, NoteStatus
 from app.agents.tools.response import ToolResponse
-from app.agents.tools.notes.args import ListNotesArgs
 from app.core.database import get_cursor
 
 
-_SQL_BY_ID = """
-    SELECT id, source_text, content, items, concluded, recorded_at, concluded_at
-    FROM notes
-    WHERE id = %s
+_SQL_BASE = """
+SELECT n.id, n.title, n.source_text, n.content, c.name, n.status,
+       n.recorded_at, n.updated_at, n.concluded_at
+FROM notes n
+LEFT JOIN categories c ON c.id = n.category_id
+WHERE 1=1
 """
 
-_SQL_BASE         = "SELECT id, source_text, content, items, concluded, recorded_at, concluded_at FROM notes WHERE 1=1"
-_SQL_FILTER_TEXT  = " AND (source_text ILIKE %s OR content ILIKE %s)"
-_SQL_FILTER_STATE = " AND concluded = %s"
-_SQL_FILTER_ITEMS = " AND %s = ANY(items)"
-_SQL_ORDER        = " ORDER BY recorded_at DESC LIMIT %s"
+_SQL_ITEMS = """
+SELECT id, content, position, is_completed, completed_at
+FROM note_items
+WHERE note_id = %s
+ORDER BY position, id
+"""
+
+
+def _serialize_note(row, items):
+    return {
+        "note_id": row[0],
+        "title": row[1],
+        "source_text": row[2],
+        "content": row[3],
+        "category": row[4],
+        "status": row[5],
+        "recorded_at": row[6].isoformat(),
+        "updated_at": row[7].isoformat(),
+        "concluded_at": row[8].isoformat() if row[8] else None,
+        "items": [
+            {
+                "item_id": item[0],
+                "content": item[1],
+                "position": item[2],
+                "is_completed": item[3],
+                "completed_at": item[4].isoformat() if item[4] else None,
+            }
+            for item in items
+        ],
+    }
 
 
 @tool("list_notes", args_schema=ListNotesArgs)
 def list_notes(
-    note_id: Optional[int]       = None,
-    content: Optional[str]       = None,
-    items:   Optional[list[str]] = None,
-    state:   Optional[bool]      = None,
-    limit:   Optional[int]       = 20
+    note_id: Optional[int] = None,
+    content: Optional[str] = None,
+    items: Optional[list[str]] = None,
+    status: Optional[NoteStatus] = None,
+    category_name: Optional[str] = None,
+    limit: int = 20,
 ) -> dict:
-    """Lista notas do usuário com base em filtros. Caso não haja filtros, lista todas as notas."""
-
+    """Lista anotações e checklists usando filtros opcionais."""
     try:
         with get_cursor() as (_, cur):
-            if note_id:
-                cur.execute(_SQL_BY_ID, (note_id,))
-                SQL_RETURN = cur.fetchone()
-                
-                if not SQL_RETURN:
-                    return ToolResponse.error(message="Nenhuma nota encontrada com o ID fornecido.")
-                
-                return ToolResponse.ok(note={
-                    "note_id":      SQL_RETURN[0],
-                    "source_text":  SQL_RETURN[1],
-                    "content":      SQL_RETURN[2],
-                    "items":        SQL_RETURN[3],
-                    "concluded":    SQL_RETURN[4],
-                    "recorded_at":  SQL_RETURN[5].isoformat(),
-                    "concluded_at": SQL_RETURN[6].isoformat() if SQL_RETURN[6] else None
-                })
-            
-            
-            
             sql = _SQL_BASE
             params = []
-            
-            if content:
-                sql += _SQL_FILTER_TEXT
-                params.extend([f"%{content}%", f"%{content}%"])
-            
-            if state is not None:
-                sql += _SQL_FILTER_STATE
-                params.append(state)
-                
-            if items:
-                sql += _SQL_FILTER_ITEMS
-                for item in items:
-                    sql += _SQL_FILTER_ITEMS
-                    params.append(item)
-                
-            sql += _SQL_ORDER
-            params.append(limit)
-            
-            cur.execute(sql, params)
-            SQL_RETURN = cur.fetchall()
-            if not SQL_RETURN:
-                return ToolResponse.ok(message="Nenhuma nota encontrada.")
-            
-            return ToolResponse.ok(notes=[
-                {
-                    "note_id":      row[0],
-                    "source_text":  row[1],
-                    "content":      row[2],
-                    "items":        row[3],
-                    "concluded":    row[4],
-                    "recorded_at":  row[5].isoformat(),
-                    "concluded_at": row[6].isoformat() if row[6] else None
-                }
-                for row in SQL_RETURN
-            ])
 
-    except Exception as e:
-        return ToolResponse.error(message=f"Erro ao listar notas no banco de dados: {e}")
+            if note_id:
+                sql += " AND n.id = %s"
+                params.append(note_id)
+            if content:
+                sql += " AND (n.title ILIKE %s OR n.source_text ILIKE %s OR n.content ILIKE %s)"
+                text_filter = f"%{content}%"
+                params.extend([text_filter, text_filter, text_filter])
+            if status:
+                sql += " AND n.status = %s"
+                params.append(status)
+            if category_name:
+                sql += " AND LOWER(c.name) = LOWER(%s)"
+                params.append(category_name)
+            for item in items or []:
+                sql += " AND EXISTS (SELECT 1 FROM note_items ni WHERE ni.note_id = n.id AND ni.content ILIKE %s)"
+                params.append(f"%{item}%")
+
+            sql += " ORDER BY n.recorded_at DESC LIMIT %s"
+            params.append(limit)
+            cur.execute(sql, params)
+            rows = cur.fetchall()
+
+            notes = []
+            for row in rows:
+                cur.execute(_SQL_ITEMS, (row[0],))
+                notes.append(_serialize_note(row, cur.fetchall()))
+
+        if note_id and not notes:
+            return ToolResponse.error(message="Nenhuma anotação encontrada com o ID fornecido.")
+        return ToolResponse.ok(notes=notes, total=len(notes))
+    except Exception:
+        return ToolResponse.error(message="Não foi possível consultar as anotações.")

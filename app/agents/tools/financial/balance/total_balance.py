@@ -6,9 +6,10 @@ from app.agents.tools.response import ToolResponse
 
 _SQL = """
 SELECT
-    SUM(CASE WHEN type = 1 THEN amount ELSE 0 END),
-    SUM(CASE WHEN type = 2 THEN amount ELSE 0 END)
-FROM transactions
+    SUM(CASE WHEN tt.type = 'INCOME' THEN t.amount ELSE 0 END),
+    SUM(CASE WHEN tt.type = 'EXPENSES' THEN t.amount ELSE 0 END)
+FROM transactions t
+JOIN transaction_types tt ON tt.id = t.type
 """
 
 
@@ -32,5 +33,5 @@ def total_balance() -> dict:
             }
         )
 
-    except Exception as e:
-        return ToolResponse.error(message=str(e))
+    except Exception:
+        return ToolResponse.error(message="Não foi possível consultar o saldo total.")
