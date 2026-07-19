@@ -4,6 +4,9 @@ services:
     container_name: assessor_app
     env_file:
       - .env
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/${MONGODB_DB}
+      FAQ_PDF_PATH: /app/data/documents/faq.pdf
     depends_on:
       postgres:
         condition: service_healthy
@@ -17,7 +20,7 @@ services:
     tty: true
 
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16-alpine@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
     container_name: assessor_postgres
     restart: unless-stopped
     environment:
@@ -39,7 +42,7 @@ services:
       retries: 10
 
   mongo:
-    image: mongo:7
+    image: mongo:7@sha256:340c1c56fb10e95cf79ff547f8664b96bc6ead9909bc355238cbf865a9695a6f
     container_name: assessor_mongo
     restart: unless-stopped
     ports:
