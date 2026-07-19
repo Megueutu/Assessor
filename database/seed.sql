@@ -16,7 +16,8 @@ INSERT INTO categories (name) VALUES
   ('contas'),
   ('investimento'),
   ('presente'),
-  ('outros')
+  ('outros'),
+  ('eletrônicos')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO transactions (amount, type, category_id, description, payment_method, occurred_at, source_text) VALUES
@@ -41,24 +42,31 @@ INSERT INTO transactions (amount, type, category_id, description, payment_method
   (250.00, 2, 8, 'Passeio de fim de semana', 'Cartão de Crédito', '2026-04-20 14:00:00-03', 'Atividades de lazer'),
   (110.00, 2, 1, 'Almoço em restaurante', 'Débito', '2026-04-22 12:30:00-03', 'Almoço de negócios');
 
-INSERT INTO notes (content, source_text, items, concluded, recorded_at, concluded_at) VALUES
-  ('Comprar mantimentos da semana', 'Lista mental antes de sair', ARRAY['arroz','feijão','leite','ovos'], FALSE, '2026-04-01 09:00:00-03', NULL),
-  ('Finalizar relatório mensal', 'Demanda do trabalho', ARRAY['dados','gráficos','revisão'], TRUE, '2026-04-01 10:00:00-03', '2026-04-02 15:00:00-03'),
-  ('Treino na academia', 'Planejamento diário', ARRAY['peito','tríceps','cardio'], FALSE, '2026-04-02 07:00:00-03', NULL),
-  ('Estudar SQL', 'Meta de aprendizado', ARRAY['joins','indexes','CTE'], FALSE, '2026-04-02 20:00:00-03', NULL),
-  ('Pagar contas do mês', 'Lembrete financeiro', ARRAY['luz','água','internet'], TRUE, '2026-04-03 08:00:00-03', '2026-04-03 09:00:00-03'),
-  ('Organizar workspace', 'Produtividade', ARRAY['limpeza','cabos','arquivos'], TRUE, '2026-04-03 18:00:00-03', '2026-04-03 19:00:00-03'),
-  ('Planejar viagem', 'Conversa com amigos', ARRAY['passagens','hotel','roteiro'], FALSE, '2026-04-04 12:00:00-03', NULL),
-  ('Ler livro técnico', 'Estudo contínuo', ARRAY['cap1','cap2','anotações'], FALSE, '2026-04-04 22:00:00-03', NULL),
-  ('Atualizar currículo', 'Busca de oportunidades', ARRAY['experiências','skills'], TRUE, '2026-04-05 14:00:00-03', '2026-04-05 16:00:00-03'),
-  ('Reunião com equipe', 'Sprint semanal', ARRAY['status','bloqueios'], TRUE, '2026-04-06 10:00:00-03', '2026-04-06 11:00:00-03'),
-  ('Backup dos arquivos', 'Segurança de dados', ARRAY['docs','fotos'], TRUE, '2026-04-06 23:00:00-03', '2026-04-06 23:30:00-03'),
-  ('Estudar inglês', 'Rotina diária', ARRAY['listening','speaking'], FALSE, '2026-04-07 19:00:00-03', NULL),
-  ('Ir ao médico', 'Check-up anual', ARRAY['exames','consulta'], TRUE, '2026-04-08 09:00:00-03', '2026-04-08 10:30:00-03'),
-  ('Planejar semana', 'Organização pessoal', ARRAY['tarefas','prioridades'], TRUE, '2026-04-09 08:00:00-03', '2026-04-09 08:45:00-03'),
-  ('Limpar a casa', 'Rotina doméstica', ARRAY['quarto','sala','cozinha'], FALSE, '2026-04-10 11:00:00-03', NULL),
-  ('Assistir curso online', 'Capacitação', ARRAY['aula1','aula2'], FALSE, '2026-04-10 21:00:00-03', NULL),
-  ('Configurar projeto novo', 'Dev task', ARRAY['repo','env','db'], TRUE, '2026-04-11 15:00:00-03', '2026-04-11 18:00:00-03'),
-  ('Responder emails', 'Trabalho', ARRAY['clientes','interno'], TRUE, '2026-04-12 09:30:00-03', '2026-04-12 10:15:00-03'),
-  ('Caminhada no parque', 'Saúde', ARRAY['alongamento'], FALSE, '2026-04-13 07:00:00-03', NULL),
-  ('Revisar código', 'Code review', ARRAY['PR1','PR2','feedback'], TRUE, '2026-04-14 16:00:00-03', '2026-04-14 17:30:00-03');
+INSERT INTO notes (title, content, source_text, category_id, status, recorded_at, updated_at, concluded_at)
+SELECT
+  'Estudar SQL',
+  'Revisar joins, índices e CTEs',
+  'Meta de aprendizado',
+  (SELECT id FROM categories WHERE LOWER(name) = 'estudo' LIMIT 1),
+  'ACTIVE',
+  '2026-04-02 20:00:00-03',
+  '2026-04-02 20:00:00-03',
+  NULL
+WHERE NOT EXISTS (SELECT 1 FROM notes WHERE source_text = 'Meta de aprendizado');
+
+INSERT INTO note_items (note_id, content, position)
+SELECT n.id, item.content, item.position
+FROM notes n
+JOIN (VALUES ('joins', 0), ('indexes', 1), ('CTE', 2)) AS item(content, position) ON TRUE
+WHERE n.source_text = 'Meta de aprendizado'
+  AND NOT EXISTS (SELECT 1 FROM note_items ni WHERE ni.note_id = n.id);
+
+INSERT INTO wishes (name, description, category_id, target_amount, priority, source_text)
+SELECT
+  'PlayStation',
+  'Console para lazer',
+  (SELECT id FROM categories WHERE LOWER(name) = 'eletrônicos' LIMIT 1),
+  NULL,
+  3,
+  'Quero comprar um PlayStation'
+WHERE NOT EXISTS (SELECT 1 FROM wishes WHERE source_text = 'Quero comprar um PlayStation');
