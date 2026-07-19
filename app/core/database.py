@@ -5,7 +5,9 @@ from pymongo import MongoClient
 
 
 def _get_conn():
-    return connect(config.PSQL_DATABASE_URL)
+    if not config.POSTGRES_DATABASE_URL:
+        raise RuntimeError("Configure POSTGRES_URI ou POSTGRES_LOCAL.")
+    return connect(config.POSTGRES_DATABASE_URL)
 
 @contextmanager
 def get_cursor():
@@ -27,10 +29,21 @@ def get_cursor():
 
 class _MongoDatabase:
     def __init__(self):
-        self.client = MongoClient(config.MONGODB_URI)
-        self.db = self.client.get_database()
+        self.client = None
+        self.db = None
+
+    def _connect(self):
+        if self.db is not None:
+            return
+        if not config.MONGODB_DATABASE_URL:
+            raise RuntimeError("Configure MONGODB_URI ou MONGODB_LOCAL.")
+        if not config.MONGODB_DB:
+            raise RuntimeError("Configure MONGODB_DB.")
+        self.client = MongoClient(config.MONGODB_DATABASE_URL)
+        self.db = self.client[config.MONGODB_DB]
 
     def get_collection(self, name: str):
+        self._connect()
         return self.db[name]
 
 mongo_conn = _MongoDatabase()

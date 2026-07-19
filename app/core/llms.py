@@ -17,16 +17,23 @@ _LLM_GEMINI = ChatGoogleGenerativeAI(
     google_api_key=config.GEMINI_API_KEY
 )
 
-LLM_GROQ = ChatGroq(
-    model='llama-3.3-70b-versatile',
-    temperature=0.3,
-    groq_api_key=config.GROQ_API_KEY
-)
+def _groq_models(temperature: float) -> list[ChatGroq]:
+    return [
+        ChatGroq(
+            model='llama-3.3-70b-versatile',
+            temperature=temperature,
+            groq_api_key=api_key,
+        )
+        for api_key in config.GROQ_API_KEYS
+    ]
 
-SPECIALIST_LLM = _LLM_GEMINI.with_fallbacks([LLM_GROQ])
 
-FAST_LLM = ChatGroq(
-    model='llama-3.3-70b-versatile',
-    temperature=0.0,
-    groq_api_key=config.GROQ_API_KEY
-)
+_SPECIALIST_GROQ_MODELS = _groq_models(temperature=0.3)
+SPECIALIST_LLM = _LLM_GEMINI.with_fallbacks(_SPECIALIST_GROQ_MODELS)
+
+_FAST_GROQ_MODELS = _groq_models(temperature=0.0)
+if not _FAST_GROQ_MODELS:
+    raise RuntimeError("Nenhuma chave Groq válida disponível para o FAST_LLM.")
+
+LLM_GROQ = _SPECIALIST_GROQ_MODELS[0]
+FAST_LLM = _FAST_GROQ_MODELS[0].with_fallbacks(_FAST_GROQ_MODELS[1:])
