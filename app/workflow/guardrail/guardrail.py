@@ -27,7 +27,7 @@ def guardrail_in(anonymized_message):
         if kw in texto_lower:
             return _block("acesso_dados_internos", "Não tenho como compartilhar informações internas do sistema.")
 
-    answer = LLM.invoke(CLASSIFIER_PROMPT.format(message=anonymized_message)).content
+    answer = LLM.invoke(CLASSIFIER_PROMPT(anonymized_message)).content
 
     category = "APROVADO"
     for linha in answer.splitlines():

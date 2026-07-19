@@ -18,7 +18,7 @@ from app.workflow.nodes import (
 def dispatch(state: GraphState):
     sends, flow, intent = list(), state["flow"], state["intent"]
 
-    if flow == Flow.DIRECT: return END
+    if flow == Flow.DIRECT: return Agent.GUARDRAIL_OUT
 
     elif flow == Flow.SPECIALIST:
         if intent.get(Agent.FINANCIAL): sends.append(Send(Agent.FINANCIAL, state))
@@ -32,7 +32,7 @@ def dispatch(state: GraphState):
 
 
 def guardrail_dispatch(state: GraphState):
-    return END if state["flow"] == Flow.DIRECT.value else Agent.ROUTER
+    return Agent.GUARDRAIL_OUT if state["flow"] == Flow.DIRECT.value else Agent.ROUTER
 
 
 GRAPH = StateGraph(GraphState)
@@ -44,7 +44,7 @@ GRAPH.add_conditional_edges(
     guardrail_dispatch,
     {
         Agent.ROUTER: Agent.ROUTER,
-        END: END,
+        Agent.GUARDRAIL_OUT: Agent.GUARDRAIL_OUT,
     }
 )
 

@@ -1,3 +1,5 @@
+import re
+
 from app.database.collections import Collections
 
 _coll = Collections.SESSIONS
@@ -14,10 +16,20 @@ def retrieve_history(session_id: str, search: str = "", limit: int = 3) -> list[
     busca      : termo opcional para filtrar resumos relevantes
     limite     : máximo de sessões retornadas (mais recentes primeiro)
     """
-    filtro = {"session_id": session_id}
+    filtro = {
+        "session_id": session_id,
+        "resumo": {"$nin": ["", None]},
+        "$or": [
+            {"status": "COMPLETED"},
+            {"status": {"$exists": False}},
+        ],
+    }
 
     if search:
-        filtro["resumo"] = {"$regex": search, "$options": "i"}
+        filtro["resumo"] = {
+            "$regex": re.escape(search),
+            "$options": "i",
+        }
 
     docs = (
         _coll
