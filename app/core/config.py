@@ -22,6 +22,10 @@ class Config:
         self.MONGODB_DB = os.getenv("MONGODB_DB")
 
         self.FAQ_PDF_PATH = os.getenv("FAQ_PDF_PATH")
+        self.EDUCATION_DOCUMENTS_PATH = os.getenv(
+            "EDUCATION_DOCUMENTS_PATH",
+            "data/documents/education",
+        )
         self.TIMEZONE_REGION = os.getenv("TIMEZONE_REGION")
 
     @property
