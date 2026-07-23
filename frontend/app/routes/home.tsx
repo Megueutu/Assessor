@@ -1,13 +1,16 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
+import { ChatApp } from "../components/chat-app";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Assessor — seu assistente de IA" },
+    {
+      name: "description",
+      content: "Converse, crie e explore ideias com o Assessor.",
+    },
   ];
 }
 
 export default function Home() {
-  return <Welcome />;
+  return <ChatApp />;
 }
