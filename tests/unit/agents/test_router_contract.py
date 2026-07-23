@@ -17,11 +17,29 @@ class TestRouterContract(unittest.TestCase):
                 Agent.NOTES: False,
                 Agent.FAQ: False,
                 Agent.EDUCATION: True,
+                Agent.EXCHANGE: False,
             },
         )
 
         self.assertEqual(decision.flow, Flow.REFER)
         self.assertTrue(decision.intent[Agent.EDUCATION])
+        self.assertIsNone(decision.answer)
+
+    def test_should_accept_exchange_refer_decision(self):
+        decision = RouterDecision(
+            flow=Flow.REFER,
+            intent={
+                Agent.FINANCIAL: False,
+                Agent.SCHEDULE: False,
+                Agent.NOTES: False,
+                Agent.FAQ: False,
+                Agent.EDUCATION: False,
+                Agent.EXCHANGE: True,
+            },
+        )
+
+        self.assertEqual(decision.flow, Flow.REFER)
+        self.assertTrue(decision.intent[Agent.EXCHANGE])
         self.assertIsNone(decision.answer)
 
     def test_should_reject_unknown_flow(self):
