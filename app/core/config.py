@@ -7,26 +7,23 @@ load_dotenv()
 class Config:
     def __init__(self):
         self.GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-        self.GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+        self.GROQ_API_KEY   = os.getenv("GROQ_API_KEY")
         self.VALIDATED_GROQ_API_KEYS: list[str] | None = None
 
         self.POSTGRES_LOCAL = os.getenv("POSTGRES_LOCAL")
-        self.MONGODB_LOCAL = os.getenv("MONGODB_LOCAL")
+        self.MONGODB_LOCAL  = os.getenv("MONGODB_LOCAL")
 
-        self.POSTGRES_URI = os.getenv("POSTGRES_URI")
-        self.POSTGRES_DB = os.getenv("POSTGRES_DB")
+        self.POSTGRES_URI  = os.getenv("POSTGRES_URI")
+        self.POSTGRES_DB   = os.getenv("POSTGRES_DB")
         self.POSTGRES_USER = os.getenv("POSTGRES_USER")
         self.POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 
         self.MONGODB_URI = os.getenv("MONGODB_URI")
-        self.MONGODB_DB = os.getenv("MONGODB_DB")
+        self.MONGODB_DB  = os.getenv("MONGODB_DB")
 
-        self.FAQ_PDF_PATH = os.getenv("FAQ_PDF_PATH")
-        self.EDUCATION_DOCUMENTS_PATH = os.getenv(
-            "EDUCATION_DOCUMENTS_PATH",
-            "data/documents/education",
-        )
         self.TIMEZONE_REGION = os.getenv("TIMEZONE_REGION")
+        self.FAQ_PDF_PATH    = os.getenv("FAQ_PDF_PATH")
+        self.EDUCATION_DOCUMENTS_PATH = os.getenv("EDUCATION_DOCUMENTS_PATH")
 
     @property
     def POSTGRES_DATABASE_URL(self) -> str | None:
