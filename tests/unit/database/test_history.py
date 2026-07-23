@@ -1,6 +1,10 @@
 import unittest
+from unittest.mock import patch
 
-from app.database import history
+from app.core.database import mongo_conn
+
+with patch.object(mongo_conn, "get_collection", return_value=object()):
+    from app.database import history
 
 
 class FakeCursor:

@@ -5,7 +5,7 @@ from unittest.mock import patch
 from app.agents.tools.notes.note.add_note import add_note
 from app.agents.tools.notes.note.conclude_note import conclude_note
 from app.agents.tools.notes.note.list_notes import list_notes
-from tests.helpers import FakeCursor, cursor_context
+from tests.unit.tools.helpers import FakeCursor, cursor_context
 
 
 class TestNotesTools(unittest.TestCase):

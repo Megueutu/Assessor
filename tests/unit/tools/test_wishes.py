@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from app.agents.tools.financial.transaction.purchase_wish import purchase_wish
 from app.agents.tools.notes.wish.cancel_wish import cancel_wish
-from tests.helpers import FakeCursor, cursor_context
+from tests.unit.tools.helpers import FakeCursor, cursor_context
 
 
 class TestWishTools(unittest.TestCase):

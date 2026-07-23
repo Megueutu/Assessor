@@ -10,7 +10,7 @@ from app.agents.tools.schedule.event.cancel_event import cancel_event
 from app.agents.tools.schedule.event.check_availability import check_availability
 from app.agents.tools.schedule.event.list_events import list_events
 from app.agents.tools.schedule.event.update_event import update_event
-from tests.helpers import FakeCursor, cursor_context
+from tests.unit.tools.helpers import FakeCursor, cursor_context
 
 
 def event_row(event_id=7, title="Reunião", start=None, end=None, status="ACTIVE"):
