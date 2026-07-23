@@ -4,6 +4,7 @@ from app.agents.prompt.specialist.financial import CAPABILITY as FINANCIAL_CAPAB
 from app.agents.prompt.specialist.schedule  import CAPABILITY as SCHEDULE_CAPABILITY
 from app.agents.prompt.specialist.faq       import CAPABILITY as FAQ_CAPABILITY
 from app.agents.prompt.specialist.education import CAPABILITY as EDUCATION_CAPABILITY
+from app.agents.prompt.specialist.exchange  import CAPABILITY as EXCHANGE_CAPABILITY
 from app.agents.prompt.specialist.notes     import CAPABILITY as NOTES_CAPABILITY
 
 
@@ -65,6 +66,12 @@ _RULES = """
   investimentos e riscos pertencem ao fluxo REFER com a intenção education.
 - Não use education para consultas ou operações sobre dados financeiros do usuário.
 
+#### Câmbio
+- Consultas de cotação atual ou histórica, conversão e variação de moedas pertencem ao
+  fluxo REFER com a intenção exchange.
+- Use education para conceitos gerais de investimento e exchange para dados cambiais externos.
+- Nunca encaminhe pedidos de recomendação de compra, venda ou manutenção de moeda.
+
 #### Formato
 - Nunca misture formatos de saída.
 - Sempre respeite exatamente o formato especificado.
@@ -88,6 +95,9 @@ def _INTENTS() -> str: return f"""
 
 #### EDUCATION
 {EDUCATION_CAPABILITY}
+
+#### EXCHANGE
+{EXCHANGE_CAPABILITY}
 """
 
 
@@ -109,7 +119,8 @@ intent = {
     schedule: true|false,
     notes: true|false,
     faq: true|false,
-    education: true|false
+    education: true|false,
+    exchange: true|false
 }
 
 answer = null
@@ -127,7 +138,8 @@ intent = {
     schedule: false,
     notes: false,
     faq: false,
-    education: false
+    education: false,
+    exchange: false
 }
 answer = Olá! Como posso ajudar com suas finanças ou organização?
 """,
@@ -144,7 +156,8 @@ intent = {
     schedule: true,
     notes: false,
     faq: false,
-    education: false
+    education: false,
+    exchange: false
 }
 answer = null
 """,
@@ -161,7 +174,8 @@ intent = {
     schedule: false,
     notes: false,
     faq: true,
-    education: false
+    education: false,
+    exchange: false
 }
 answer = null
 """,
@@ -178,7 +192,25 @@ intent = {
     schedule: false,
     notes: false,
     faq: false,
-    education: true
+    education: true,
+    exchange: false
+}
+answer = null
+""",
+    """
+#### Cotação cambial
+
+Usuário:
+Qual foi a última cotação PTAX do dólar?
+
+flow = REFER
+intent = {
+    financial: false,
+    schedule: false,
+    notes: false,
+    faq: false,
+    education: false,
+    exchange: true
 }
 answer = null
 """,

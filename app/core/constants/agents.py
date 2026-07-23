@@ -8,6 +8,7 @@ class Agent(str, Enum):
     NOTES = "notes"
     FAQ = "faq"
     EDUCATION = "education"
+    EXCHANGE = "exchange"
     SUMMARY = "summary"
     GUARDRAIL_IN = "guardrail_in"
     GUARDRAIL_OUT = "guardrail_out"

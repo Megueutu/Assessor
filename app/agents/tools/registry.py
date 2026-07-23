@@ -6,6 +6,13 @@ from .financial.transaction.update_transaction import update_transaction
 from .financial.transaction.purchase_wish import purchase_wish
 from .faq.faq_retriever import faq_retriever
 from .education.education_retriever import education_retriever
+from .exchange.exchange import (
+    calculate_exchange_variation,
+    convert_currency,
+    get_exchange_history,
+    get_exchange_rate,
+    list_supported_currencies,
+)
 from .notes.note.add_note import add_note
 from .notes.note.conclude_note import conclude_note
 from .notes.note.list_notes import list_notes
@@ -39,6 +46,14 @@ FAQ_TOOLS = [
 
 EDUCATION_TOOLS = [
     education_retriever,
+]
+
+EXCHANGE_TOOLS = [
+    list_supported_currencies,
+    get_exchange_rate,
+    get_exchange_history,
+    calculate_exchange_variation,
+    convert_currency,
 ]
 
 NOTES_TOOLS = [

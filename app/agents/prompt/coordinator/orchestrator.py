@@ -24,7 +24,7 @@ _RULES = """
 _INPUT = """
 ### ENTRADA
 JSON do especialista contendo, quando aplicável:
-- dominio: área da solicitação (financeiro, notas, agenda, faq, education)
+- dominio: área da solicitação (financeiro, notas, agenda, faq, education, exchange)
 - intencao: ação interpretada pelo especialista
 - resposta: resultado da operação
 - recomendacao: sugestão contextual
@@ -34,7 +34,7 @@ JSON do especialista contendo, quando aplicável:
 - janela_tempo: período de referência da consulta
 - evento: dados de evento capturados
 - indicadores: métricas ou totais calculados
-- fontes: materiais usados para fundamentar uma resposta educacional
+- fontes: materiais ou fontes oficiais usados para fundamentar a resposta
 """
 
 

@@ -6,6 +6,7 @@ from app.agents.tools.registry import NOTES_TOOLS
 from app.agents.tools.registry import FINANCIAL_TOOLS
 from app.agents.tools.registry import FAQ_TOOLS
 from app.agents.tools.registry import EDUCATION_TOOLS
+from app.agents.tools.registry import EXCHANGE_TOOLS
 from app.agents.tools.registry import SCHEDULE_TOOLS
 from app.agents.tools.router.history_retriever import history_retriever
 
@@ -15,6 +16,7 @@ from app.agents.prompt.specialist.schedule import SCHEDULE_PROMPT
 from app.agents.prompt.specialist.financial import FINANCIAL_PROMPT
 from app.agents.prompt.specialist.faq import FAQ_PROMPT
 from app.agents.prompt.specialist.education import EDUCATION_PROMPT
+from app.agents.prompt.specialist.exchange import EXCHANGE_PROMPT
 from app.agents.prompt.coordinator.router import ROUTER_PROMPT
 from app.agents.prompt.utils.summary import SUMMARY_PROMPT
 
@@ -56,6 +58,12 @@ EDUCATION_AGENT = create_agent(
     tools=EDUCATION_TOOLS,
 )
 
+EXCHANGE_AGENT = create_agent(
+    model=FAST_LLM,
+    system_prompt=EXCHANGE_PROMPT(),
+    tools=EXCHANGE_TOOLS,
+)
+
 SUMMARY_AGENT = create_agent(
     model=FAST_LLM,
     system_prompt=SUMMARY_PROMPT()
@@ -87,6 +95,7 @@ AGENTS = {
     "schedule":  SCHEDULE_AGENT,
     "faq":       FAQ_AGENT,
     "education": EDUCATION_AGENT,
+    "exchange": EXCHANGE_AGENT,
     "notes":     NOTES_AGENT,
     "orchestrator": ORCHESTRATOR_AGENT,
     "router": ROUTER_AGENT,
