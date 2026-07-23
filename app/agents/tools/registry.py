@@ -5,6 +5,7 @@ from .financial.transaction.search_transactions import search_transactions
 from .financial.transaction.update_transaction import update_transaction
 from .financial.transaction.purchase_wish import purchase_wish
 from .faq.faq_retriever import faq_retriever
+from .education.education_retriever import education_retriever
 from .notes.note.add_note import add_note
 from .notes.note.conclude_note import conclude_note
 from .notes.note.list_notes import list_notes
@@ -34,6 +35,10 @@ FINANCIAL_TOOLS = [
 
 FAQ_TOOLS = [
     faq_retriever,
+]
+
+EDUCATION_TOOLS = [
+    education_retriever,
 ]
 
 NOTES_TOOLS = [

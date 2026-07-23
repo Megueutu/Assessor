@@ -27,6 +27,7 @@ def dispatch(state: GraphState):
 
     elif flow == Flow.REFER:
         if intent.get(Agent.FAQ): sends.append(Send(Agent.FAQ, state))
+        if intent.get(Agent.EDUCATION): sends.append(Send(Agent.EDUCATION, state))
 
     return sends
 
@@ -58,6 +59,7 @@ GRAPH.add_node(Agent.FINANCIAL, AGENTS[Agent.FINANCIAL])
 GRAPH.add_node(Agent.SCHEDULE,  AGENTS[Agent.SCHEDULE])
 GRAPH.add_node(Agent.NOTES,     AGENTS[Agent.NOTES])
 GRAPH.add_node(Agent.FAQ,       AGENTS[Agent.FAQ])
+GRAPH.add_node(Agent.EDUCATION, AGENTS[Agent.EDUCATION])
 
 GRAPH.add_conditional_edges(
     Agent.ROUTER,
@@ -68,6 +70,7 @@ GRAPH.add_edge(Agent.FINANCIAL, "join")
 GRAPH.add_edge(Agent.SCHEDULE,  "join")
 GRAPH.add_edge(Agent.NOTES,     "join")
 GRAPH.add_edge(Agent.FAQ, "join")
+GRAPH.add_edge(Agent.EDUCATION, "join")
 
 GRAPH.add_edge("join", Agent.ORCHESTRATOR)
 GRAPH.add_edge(Agent.ORCHESTRATOR, Agent.GUARDRAIL_OUT)

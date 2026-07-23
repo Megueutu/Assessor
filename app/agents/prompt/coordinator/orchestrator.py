@@ -16,6 +16,7 @@ _RULES = """
   direta ao usuário antes de qualquer outra informação.
 - Se o JSON contiver 'acompanhamento', inclua-o ao final da resposta como próximo passo.
 - Se ambos existirem, 'esclarecer' tem prioridade total — omita 'acompanhamento'.
+- Se o JSON contiver 'fontes', apresente-as de forma concisa ao final da resposta.
 - Respostas devem ser curtas, claras e acionáveis.
 """
 
@@ -23,7 +24,7 @@ _RULES = """
 _INPUT = """
 ### ENTRADA
 JSON do especialista contendo, quando aplicável:
-- dominio: área da solicitação (financeiro, notas, agenda, faq)
+- dominio: área da solicitação (financeiro, notas, agenda, faq, education)
 - intencao: ação interpretada pelo especialista
 - resposta: resultado da operação
 - recomendacao: sugestão contextual
@@ -33,6 +34,7 @@ JSON do especialista contendo, quando aplicável:
 - janela_tempo: período de referência da consulta
 - evento: dados de evento capturados
 - indicadores: métricas ou totais calculados
+- fontes: materiais usados para fundamentar uma resposta educacional
 """
 
 
@@ -42,7 +44,7 @@ Resposta final em linguagem natural, composta a partir dos campos do JSON recebi
 Construa a resposta na seguinte ordem, incluindo apenas os campos presentes:
 1. Se houver 'esclarecer': formule a pergunta ao usuário e encerre — não inclua mais nada.
 2. Caso contrário: apresente 'resposta', seguida de 'recomendacao' se houver,
-   e 'acompanhamento' ao final se houver.
+   'acompanhamento' se houver e 'fontes' ao final se houver.
 """
 
 

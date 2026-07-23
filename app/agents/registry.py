@@ -5,6 +5,7 @@ from app.core.llms import SPECIALIST_LLM
 from app.agents.tools.registry import NOTES_TOOLS
 from app.agents.tools.registry import FINANCIAL_TOOLS
 from app.agents.tools.registry import FAQ_TOOLS
+from app.agents.tools.registry import EDUCATION_TOOLS
 from app.agents.tools.registry import SCHEDULE_TOOLS
 from app.agents.tools.router.history_retriever import history_retriever
 
@@ -13,6 +14,7 @@ from app.agents.prompt.specialist.notes import NOTES_PROMPT
 from app.agents.prompt.specialist.schedule import SCHEDULE_PROMPT
 from app.agents.prompt.specialist.financial import FINANCIAL_PROMPT
 from app.agents.prompt.specialist.faq import FAQ_PROMPT
+from app.agents.prompt.specialist.education import EDUCATION_PROMPT
 from app.agents.prompt.coordinator.router import ROUTER_PROMPT
 from app.agents.prompt.utils.summary import SUMMARY_PROMPT
 
@@ -48,6 +50,12 @@ FAQ_AGENT = create_agent(
     tools=FAQ_TOOLS,
 )
 
+EDUCATION_AGENT = create_agent(
+    model=FAST_LLM,
+    system_prompt=EDUCATION_PROMPT(),
+    tools=EDUCATION_TOOLS,
+)
+
 SUMMARY_AGENT = create_agent(
     model=FAST_LLM,
     system_prompt=SUMMARY_PROMPT()
@@ -78,6 +86,7 @@ AGENTS = {
     "financial": FINANCIAL_AGENT,
     "schedule":  SCHEDULE_AGENT,
     "faq":       FAQ_AGENT,
+    "education": EDUCATION_AGENT,
     "notes":     NOTES_AGENT,
     "orchestrator": ORCHESTRATOR_AGENT,
     "router": ROUTER_AGENT,

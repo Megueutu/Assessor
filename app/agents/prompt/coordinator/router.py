@@ -3,6 +3,7 @@ from ..system import SHARED_PROMPT
 from app.agents.prompt.specialist.financial import CAPABILITY as FINANCIAL_CAPABILITY
 from app.agents.prompt.specialist.schedule  import CAPABILITY as SCHEDULE_CAPABILITY
 from app.agents.prompt.specialist.faq       import CAPABILITY as FAQ_CAPABILITY
+from app.agents.prompt.specialist.education import CAPABILITY as EDUCATION_CAPABILITY
 from app.agents.prompt.specialist.notes     import CAPABILITY as NOTES_CAPABILITY
 
 
@@ -59,6 +60,11 @@ _RULES = """
 - Perguntas sobre regras, políticas, termos, privacidade, segurança ou funcionamento do sistema
   pertencem ao fluxo REFER.
 
+#### Educação financeira
+- Perguntas conceituais sobre finanças pessoais, juros, crédito, dívidas, orçamento,
+  investimentos e riscos pertencem ao fluxo REFER com a intenção education.
+- Não use education para consultas ou operações sobre dados financeiros do usuário.
+
 #### Formato
 - Nunca misture formatos de saída.
 - Sempre respeite exatamente o formato especificado.
@@ -79,6 +85,9 @@ def _INTENTS() -> str: return f"""
 
 #### NOTES
 {NOTES_CAPABILITY}
+
+#### EDUCATION
+{EDUCATION_CAPABILITY}
 """
 
 
@@ -99,7 +108,8 @@ intent = {
     financial: true|false,
     schedule: true|false,
     notes: true|false,
-    faq: true|false
+    faq: true|false,
+    education: true|false
 }
 
 answer = null
@@ -116,7 +126,8 @@ intent = {
     financial: false,
     schedule: false,
     notes: false,
-    faq: false
+    faq: false,
+    education: false
 }
 answer = Olá! Como posso ajudar com suas finanças ou organização?
 """,
@@ -132,7 +143,8 @@ intent = {
     financial: true,
     schedule: true,
     notes: false,
-    faq: false
+    faq: false,
+    education: false
 }
 answer = null
 """,
@@ -148,7 +160,25 @@ intent = {
     financial: false,
     schedule: false,
     notes: false,
-    faq: true
+    faq: true,
+    education: false
+}
+answer = null
+""",
+
+"""
+#### Conceito financeiro
+
+Usuário:
+O que são juros compostos?
+
+flow = REFER
+intent = {
+    financial: false,
+    schedule: false,
+    notes: false,
+    faq: false,
+    education: true
 }
 answer = null
 """,
